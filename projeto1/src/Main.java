@@ -5,7 +5,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         int t = Integer.parseInt(in.readLine());
-        Path p = null;
+        Path p;
         while(t > 0){
             p = new Path(in.readLine());
             System.out.println(p.getTime());
