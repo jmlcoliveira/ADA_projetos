@@ -9,7 +9,7 @@ public class Main {
         Path p;
         while (t > 0) {
             p = new Path(in.readLine());
-            System.out.println(p.getTime());
+            System.out.println(p.compute());
             t--;
         }
     }
@@ -19,61 +19,115 @@ class Path {
 
     private final char EMPTY = 'e', HARP = 'h', POTION = 'p', CLOAK = 'c',
             NO_OBJ = '\0', DOGS = '3', TROLL = 't', DRAGON = 'd';
+    private enum actions {
+        HOLD, SWITCH, DROP
+    }
 
     private final String path;
-    private final int times[][];
 
     Path(String path) {
         this.path = path;
-        char last = path.charAt(path.length() - 1);
-        this.compute(path.length() - 1, last == DRAGON ? 1 : 0, last == DOGS ? 1 : 0, last == TROLL ? 1 : 0, NO_OBJ);
-        this.times = new int[path.length() + 1][path.length() + 1];
+
     }
 
-    private int compute(int pos, int needsCloak, int needsPotion, int needsHarp, char currObj) {
-        if (pos == 0) {
-            if (needsCloak + needsPotion + needsHarp > 0) return 2;
-            else return 1;
-        }
-        int sum = 0;
-        if (path.charAt(pos) == EMPTY) {
-            if (currObj != NO_OBJ && needsCloak + needsPotion + needsHarp > 0)
-                return 3 + compute(pos - 1, needsCloak, needsPotion, needsHarp, currObj);
-            else if (currObj != NO_OBJ)
-                return 2 + compute(pos - 1, needsCloak, needsPotion, needsHarp, NO_OBJ);
-            else return 1 + compute(pos - 1, needsCloak, needsPotion, needsHarp, NO_OBJ);
+    private int min(int a, int b, int c, int d){
+        return Math.min(Math.min(a, b), Math.min(c, d));
+    }
 
-        } else if (path.charAt(pos) == HARP) {
-            if(currObj != NO_OBJ && needsHarp == 0)
-                return 2 + compute(pos-1, needsCloak, needsPotion, needsHarp, NO_OBJ);
-            if(currObj != NO_OBJ && needsHarp > 0)
-                return 2 + compute(pos-1, needsCloak, needsPotion, needsHarp, HARP);
-            if(currObj == NO_OBJ && needsHarp > 0)
-                return 2 + compute(pos - 1, needsCloak, needsPotion, needsHarp, HARP);
-            if(currObj == NO_OBJ && needsHarp == 0)
-                return 1 + compute(pos-1, needsCloak, needsPotion, needsHarp, HARP);
-        }
-        else if(path.charAt(pos) == CLOAK){
-            if(needsHarp > 0)
-                return
-        }
+    public int compute(){
+        int e=1, c=1, p=1, h=1;
+        boolean hasC=false, hasP=false, hasH=false, hasMonsterBefore=false;
 
-            if (needsCloak) {
-                if (path.charAt(pos) == 'c')
-                    return 2 + sum;
-                else return compute(pos - 1, needsCloak, needsPotion, needsHarp, currObj);
-            } else if (needsPotion) {
-                if (path.charAt(pos) == 'c' || path.charAt(pos) == 'p')
-                    return 2;
-                else return compute(pos - 1, needsCloak, needsPotion, needsHarp, currObj);
-            } else if (needsHarp) {
-                if (path.charAt(pos) == 'c' || path.charAt(pos) == 'p' || path.charAt(pos) == 'h')
-                    return Math.min(2 + sum, sum + compute(pos - 1, needsCloak, ));
-                else return compute(pos - 1, needsCloak, needsPotion, needsHarp, currObj);
+        char elemAtPos = path.charAt(0);
+        switch(elemAtPos){
+            case CLOAK -> {
+                c++;
+                hasC=true;
             }
+            case POTION -> {
+                p++;
+                hasP=true;
+            }
+            case HARP -> {
+                h++;
+                hasH=true;
+            }
+        }
+
+        for(int i = 1; i < path.length(); i++){
+            elemAtPos = path.charAt(i);
+            switch(elemAtPos){
+                case EMPTY -> {
+                    if(hasMonsterBefore) e+=2; else e++;
+                    if(hasC) c+=3; else if(hasMonsterBefore) c+=2; else c++;
+                    if(hasP) p+=3; else if(hasMonsterBefore) p+=2; else p++;
+                    if(hasH) h+=3; else if(hasMonsterBefore) h+=2; else h++;
+                    hasMonsterBefore=false;
+                }
+                case DOGS -> {
+                    if(hasC) c+=6; else c = Math.min(h+4, p+5);
+                    if(hasP) p+=5; else p = Math.min(h+4, c);
+                    if(hasH) h+=4; else h = Math.min(p, c);
+                    e = Math.min(Math.min(c, p), h);
+                    hasMonsterBefore=true;
+                }
+                case TROLL -> {
+                    if(hasC) c+=6; else c=p+5;
+                    if(hasP) p+=5; else p=c;
+                    hasH = false;
+                    h = e = Math.min(c, p);
+                    hasMonsterBefore=true;
+                }
+                case DRAGON -> {
+                    if(hasC){
+                        c+=6;
+                        e = h = p = c;
+                        hasH=false;
+                        hasP=false;
+                    }
+                    hasMonsterBefore=true;
+                }
+                case HARP -> {
+                    if(hasH){
+                        h = e;
+                        h+=3;
+                    }
+                    else {
+                        if(hasMonsterBefore) h+=3; else h+=2;
+                        hasH = true;
+                    }
+                    if(hasMonsterBefore) e+=2; else e++;
+                    if(hasP) p+=3; else p++;
+                    if(hasC) c+=3; else c++;
+                }
+                case POTION -> {
+                    if(hasP) {
+                        p = e;
+                        p += 3;
+                    }
+                    else {
+                        if(hasMonsterBefore) p+=3; else p+=2;
+                        hasP = true;
+                    }
+                    if(hasC) c+=3; else c++;
+                    if(hasH) h+=3; else h++;
+                }
+                case CLOAK -> {
+                    if(hasC){
+                        c = e;
+                        c+=3;
+                    }
+                    else {
+                        if(hasMonsterBefore) c+=3; else c+=2;
+                        hasC = true;
+                    }
+                    if(hasMonsterBefore) e+=2; else e++;
+                    if(hasP) p+=3; else p++;
+                    if(hasH) h+=3; else h++;
+                }
+            }
+        }
+        return min(e, c, p, h);
     }
 
-    public int getTime() {
-        return times[times.length - 1][times.length - 1];
-    }
 }
