@@ -19,10 +19,6 @@ class Path {
 
     private final char EMPTY = 'e', HARP = 'h', POTION = 'p', CLOAK = 'c',
             NO_OBJ = '\0', DOGS = '3', TROLL = 't', DRAGON = 'd';
-    private enum actions {
-        HOLD, SWITCH, DROP
-    }
-
     private final String path;
 
     Path(String path) {
