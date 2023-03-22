@@ -7,11 +7,14 @@ public class Main {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         int t = Integer.parseInt(in.readLine());
         Path p;
-        while (t > 0) {
+        int[] results = new int[t];
+        int count = 0;
+        while (count < t) {
             p = new Path(in.readLine());
-            System.out.println(p.compute());
-            t--;
+            results[count++] = p.compute();
         }
+        for(int v : results)
+            System.out.println(v);
     }
 }
 
@@ -23,7 +26,6 @@ class Path {
 
     Path(String path) {
         this.path = path;
-
     }
 
     private int min(int a, int b, int c, int d){
@@ -61,8 +63,12 @@ class Path {
                     hasMonsterBefore=false;
                 }
                 case DOGS -> {
-                    if(hasC) c+=6; else c = Math.min(h+4, p+5);
-                    if(hasP) p+=5; else p = Math.min(h+4, c);
+                    if(hasC) c+=6; else
+                        if(hasP && hasH) c = Math.min(h+4, p+5);
+                        else if(hasP) c = p+5; else c = h+4;
+                    if(hasP) p+=5; else
+                        if(hasH) p = Math.min(h+4, c);
+                        else p = c;
                     if(hasH) h+=4; else h = Math.min(p, c);
                     e = Math.min(Math.min(c, p), h);
                     hasMonsterBefore=true;
@@ -86,40 +92,44 @@ class Path {
                 case HARP -> {
                     if(hasH){
                         h = e;
-                        h+=3;
+                        if(hasMonsterBefore) h+=3; else h+=2;
                     }
                     else {
                         if(hasMonsterBefore) h+=3; else h+=2;
                         hasH = true;
                     }
                     if(hasMonsterBefore) e+=2; else e++;
-                    if(hasP) p+=3; else p++;
-                    if(hasC) c+=3; else c++;
+                    if(hasP) p+=3; else if(hasMonsterBefore) p=e; else p++;
+                    if(hasC) c+=3; else if(hasMonsterBefore) c=e; else c++;
+                    hasMonsterBefore = false;
                 }
                 case POTION -> {
                     if(hasP) {
                         p = e;
-                        p += 3;
+                        if(hasMonsterBefore) p+=3; else p+=2;
                     }
                     else {
                         if(hasMonsterBefore) p+=3; else p+=2;
                         hasP = true;
                     }
-                    if(hasC) c+=3; else c++;
-                    if(hasH) h+=3; else h++;
+                    if(hasMonsterBefore) e+=2; else e++;
+                    if(hasC) c+=3; else if(hasMonsterBefore) c=e; else c++;
+                    if(hasH) h+=3; else if(hasMonsterBefore) h=e; else h++;
+                    hasMonsterBefore = false;
                 }
                 case CLOAK -> {
                     if(hasC){
                         c = e;
-                        c+=3;
+                        if(hasMonsterBefore) c+=3; else c+=2;
                     }
                     else {
                         if(hasMonsterBefore) c+=3; else c+=2;
                         hasC = true;
                     }
                     if(hasMonsterBefore) e+=2; else e++;
-                    if(hasP) p+=3; else p++;
-                    if(hasH) h+=3; else h++;
+                    if(hasP) p+=3; else if(hasMonsterBefore) p=e; else p++;
+                    if(hasH) h+=3; else if(hasMonsterBefore) h=e; else h++;
+                    hasMonsterBefore = false;
                 }
             }
         }
