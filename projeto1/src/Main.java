@@ -1,139 +1,191 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.function.Function;
 
+/**
+ * ADA First Project Java implementation
+ *
+ * @author Guilherme Pocas 60236
+ * @author Joao Oliveira 61052
+ */
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         int t = Integer.parseInt(in.readLine());
         Path p;
-        int[] results = new int[t];
-        int count = 0;
-        while (count < t) {
+        while (t > 0) {
             p = new Path(in.readLine());
-            results[count++] = p.compute();
+            System.out.println(p.compute());
+            t--;
         }
-        for(int v : results)
-            System.out.println(v);
     }
 }
 
+/**
+ * Class containing a path
+ */
 class Path {
 
     private final char EMPTY = 'e', HARP = 'h', POTION = 'p', CLOAK = 'c',
-            NO_OBJ = '\0', DOGS = '3', TROLL = 't', DRAGON = 'd';
+            DOGS = '3', TROLL = 't', DRAGON = 'd';
+
+    private enum Objects {
+        EMPTY('e'),
+        HARP('h'),
+        POTION('p'),
+        CLOAK('c');
+        private final char value;
+
+        Objects(char value) {
+            this.value = value;
+        }
+    }
+
     private final String path;
+    //array containing the values of doing the path with each object
+    private final int[] values;
+    //minimum infinity value to be used in this implementation
+    //the value is the max value each step can take, multiplied by the path length.
+    private final int INFINITY;
 
     Path(String path) {
         this.path = path;
+        this.values = new int[Objects.values().length];
+        INFINITY = path.length()*6;
     }
 
-    private int min(int a, int b, int c, int d){
-        return Math.min(Math.min(a, b), Math.min(c, d));
+    /**
+     * @return minimum value
+     */
+    private int min() {
+        int min = INFINITY;
+        for (int value : values) if (value < min) min = value;
+        return min;
     }
 
-    public int compute(){
-        int e=1, c=1, p=1, h=1;
-        boolean hasC=false, hasP=false, hasH=false, hasMonsterBefore=false;
+    /**
+     * checks if it can pass a dog plot with the current object
+     * @param objects possible objects to hold
+     * @return true if possible
+     */
+    private boolean canPassDog(Objects objects) {
+        return objects != Objects.EMPTY;
+    }
+
+    /**
+     * checks if it can pass a troll plot with the current object
+     * @param objects possible objects to hold
+     * @return true if possible
+     */
+    private boolean canPassTroll(Objects objects) {
+        return objects == Objects.POTION || objects == Objects.CLOAK;
+    }
+
+    /**
+     * checks if it can pass a dragon plot with the current object
+     * @param objects possible objects to hold
+     * @return true if possible
+     */
+    private boolean canPassDragon(Objects objects) {
+        return objects == Objects.CLOAK;
+    }
+
+    /**
+     * calculates the cost of advancing to the next plot
+     * @param objects current object
+     * @param isMonsterPos true if the plot has a monster
+     * @return the cost
+     */
+    private int costOfObj(Objects objects, boolean isMonsterPos) {
+        if (!isMonsterPos) return objects == Objects.EMPTY ? 1 : 3;
+        if (objects == Objects.CLOAK) return 6;
+        if (objects == Objects.POTION) return 5;
+        if (objects == Objects.HARP) return 4;
+        return 1;
+    }
+
+    /**
+     * updates the cost if the path is possible, if not sets it at infinite
+     * @param monster generic function which tells if an object can pass certain monster
+     */
+    private void handleMonster(Function<Objects, Boolean> monster){
+        int min = INFINITY;
+        for (Objects o : Objects.values())
+            if (monster.apply(o)) {
+                values[o.ordinal()] += costOfObj(o, true);
+                if (values[o.ordinal()] < min) min = values[o.ordinal()];
+            }
+        for (Objects o : Objects.values())
+            if (!monster.apply(o))
+                values[o.ordinal()] = INFINITY;
+        values[Objects.EMPTY.ordinal()] = min;
+    }
+
+    /**
+     * updates the cost if the path is possible, if not sets it at infinite
+     * @param obj object at the current plot
+     * @param hasMonsterBefore true if there was a monster on the previous plot
+     */
+    private void handleObject(Objects obj, boolean hasMonsterBefore){
+        for (Objects o : Objects.values()) {
+            values[o.ordinal()] += costOfObj(o, false);
+            if (hasMonsterBefore && o == Objects.EMPTY) values[o.ordinal()]++;
+        }
+        values[obj.ordinal()] = values[Objects.EMPTY.ordinal()] + 1;
+    }
+
+    public int compute() {
+        boolean hasMonsterBefore = false;
 
         char elemAtPos = path.charAt(0);
-        switch(elemAtPos){
-            case CLOAK -> {
-                c++;
-                hasC=true;
-            }
-            case POTION -> {
-                p++;
-                hasP=true;
-            }
-            case HARP -> {
-                h++;
-                hasH=true;
-            }
-        }
 
-        for(int i = 1; i < path.length(); i++){
+        for (Objects o : Objects.values())
+            if (o == Objects.EMPTY) values[o.ordinal()] = 1;
+            else if (o.value == elemAtPos)
+                values[o.ordinal()] = 2;
+            else values[o.ordinal()] = INFINITY;
+
+        for (int i = 1; i < path.length(); i++) {
             elemAtPos = path.charAt(i);
-            switch(elemAtPos){
+            switch (elemAtPos) {
                 case EMPTY -> {
-                    if(hasMonsterBefore) e+=2; else e++;
-                    if(hasC) c+=3; else if(hasMonsterBefore) c+=2; else c++;
-                    if(hasP) p+=3; else if(hasMonsterBefore) p+=2; else p++;
-                    if(hasH) h+=3; else if(hasMonsterBefore) h+=2; else h++;
-                    hasMonsterBefore=false;
+                    for (Objects o : Objects.values())
+                        if (values[o.ordinal()] < INFINITY) {
+                            if (o == Objects.EMPTY) {
+                                if (hasMonsterBefore) values[o.ordinal()] += 2;
+                                else values[o.ordinal()]++;
+                            } else values[o.ordinal()] += 3;
+                        }
+
+                    hasMonsterBefore = false;
                 }
                 case DOGS -> {
-                    if(hasC) c+=6; else
-                        if(hasP && hasH) c = Math.min(h+4, p+5);
-                        else if(hasP) c = p+5; else c = h+4;
-                    if(hasP) p+=5; else
-                        if(hasH) p = Math.min(h+4, c);
-                        else p = c;
-                    if(hasH) h+=4; else h = Math.min(p, c);
-                    e = Math.min(Math.min(c, p), h);
-                    hasMonsterBefore=true;
+                    handleMonster(this::canPassDog);
+                    hasMonsterBefore = true;
                 }
                 case TROLL -> {
-                    if(hasC) c+=6; else c=p+5;
-                    if(hasP) p+=5; else p=c;
-                    hasH = false;
-                    h = e = Math.min(c, p);
-                    hasMonsterBefore=true;
+                    handleMonster(this::canPassTroll);
+                    hasMonsterBefore = true;
                 }
                 case DRAGON -> {
-                    if(hasC){
-                        c+=6;
-                        e = h = p = c;
-                        hasH=false;
-                        hasP=false;
-                    }
-                    hasMonsterBefore=true;
+                    handleMonster(this::canPassDragon);
+                    hasMonsterBefore = true;
                 }
                 case HARP -> {
-                    if(hasH){
-                        h = e;
-                        if(hasMonsterBefore) h+=3; else h+=2;
-                    }
-                    else {
-                        if(hasMonsterBefore) h+=3; else h+=2;
-                        hasH = true;
-                    }
-                    if(hasMonsterBefore) e+=2; else e++;
-                    if(hasP) p+=3; else if(hasMonsterBefore) p=e; else p++;
-                    if(hasC) c+=3; else if(hasMonsterBefore) c=e; else c++;
+                    handleObject(Objects.HARP, hasMonsterBefore);
                     hasMonsterBefore = false;
                 }
                 case POTION -> {
-                    if(hasP) {
-                        p = e;
-                        if(hasMonsterBefore) p+=3; else p+=2;
-                    }
-                    else {
-                        if(hasMonsterBefore) p+=3; else p+=2;
-                        hasP = true;
-                    }
-                    if(hasMonsterBefore) e+=2; else e++;
-                    if(hasC) c+=3; else if(hasMonsterBefore) c=e; else c++;
-                    if(hasH) h+=3; else if(hasMonsterBefore) h=e; else h++;
+                    handleObject(Objects.POTION, hasMonsterBefore);
                     hasMonsterBefore = false;
                 }
                 case CLOAK -> {
-                    if(hasC){
-                        c = e;
-                        if(hasMonsterBefore) c+=3; else c+=2;
-                    }
-                    else {
-                        if(hasMonsterBefore) c+=3; else c+=2;
-                        hasC = true;
-                    }
-                    if(hasMonsterBefore) e+=2; else e++;
-                    if(hasP) p+=3; else if(hasMonsterBefore) p=e; else p++;
-                    if(hasH) h+=3; else if(hasMonsterBefore) h=e; else h++;
+                    handleObject(Objects.CLOAK, hasMonsterBefore);
                     hasMonsterBefore = false;
                 }
             }
         }
-        return min(e, c, p, h);
+        return min();
     }
-
 }
