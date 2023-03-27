@@ -15,8 +15,8 @@ public class Main {
         int t = Integer.parseInt(in.readLine());
         Path p;
         while (t > 0) {
-            p = new Path(in.readLine());
-            System.out.println(p.compute());
+            p = new Path(in.readLine().toCharArray());
+            System.out.println(p.getResult());
             t--;
         }
     }
@@ -42,23 +42,24 @@ class Path {
         }
     }
 
-    private final String path;
+    private final char[] path;
     //array containing the values of doing the path with each object
     private final int[] values;
     //minimum infinity value to be used in this implementation
     //the value is the max value each step can take, multiplied by the path length.
     private final int INFINITY;
 
-    Path(String path) {
+    Path(char[] path) {
         this.path = path;
         this.values = new int[Objects.values().length];
-        INFINITY = path.length()*6;
+        this.INFINITY = path.length*6;
+        this.compute();
     }
 
     /**
      * @return minimum value
      */
-    private int min() {
+    public int getResult() {
         int min = INFINITY;
         for (int value : values) if (value < min) min = value;
         return min;
@@ -111,34 +112,37 @@ class Path {
      */
     private void handleMonster(Function<Objects, Boolean> monster){
         int min = INFINITY;
-        for (Objects o : Objects.values())
+        for (Objects o : Objects.values()) {
             if (monster.apply(o)) {
                 values[o.ordinal()] += costOfObj(o, true);
                 if (values[o.ordinal()] < min) min = values[o.ordinal()];
             }
-        for (Objects o : Objects.values())
-            if (!monster.apply(o))
-                values[o.ordinal()] = INFINITY;
+            else values[o.ordinal()] = INFINITY;
+        }
+        //empty always has the min possible value
         values[Objects.EMPTY.ordinal()] = min;
     }
 
     /**
-     * updates the cost if the path is possible, if not sets it at infinite
+     * updates the cost of carrying an object.
      * @param obj object at the current plot
      * @param hasMonsterBefore true if there was a monster on the previous plot
      */
     private void handleObject(Objects obj, boolean hasMonsterBefore){
-        for (Objects o : Objects.values()) {
+        for (Objects o : Objects.values())
             values[o.ordinal()] += costOfObj(o, false);
-            if (hasMonsterBefore && o == Objects.EMPTY) values[o.ordinal()]++;
-        }
+
+        if (hasMonsterBefore) values[Objects.EMPTY.ordinal()]++; //means they had an object and dropped it
+        //it was possible to get here with the empty value,
+        //therefore update object value to the min possible +1
+        //because they will leave the spot with an object
         values[obj.ordinal()] = values[Objects.EMPTY.ordinal()] + 1;
     }
 
-    public int compute() {
+    private void compute() {
         boolean hasMonsterBefore = false;
 
-        char elemAtPos = path.charAt(0);
+        char elemAtPos = path[0];
 
         for (Objects o : Objects.values())
             if (o == Objects.EMPTY) values[o.ordinal()] = 1;
@@ -146,9 +150,8 @@ class Path {
                 values[o.ordinal()] = 2;
             else values[o.ordinal()] = INFINITY;
 
-        for (int i = 1; i < path.length(); i++) {
-            elemAtPos = path.charAt(i);
-            switch (elemAtPos) {
+        for (int i = 1; i < path.length; i++) {
+            switch (path[i]) {
                 case EMPTY -> {
                     for (Objects o : Objects.values())
                         if (values[o.ordinal()] < INFINITY) {
@@ -157,7 +160,6 @@ class Path {
                                 else values[o.ordinal()]++;
                             } else values[o.ordinal()] += 3;
                         }
-
                     hasMonsterBefore = false;
                 }
                 case DOGS -> {
@@ -186,6 +188,5 @@ class Path {
                 }
             }
         }
-        return min();
     }
 }
