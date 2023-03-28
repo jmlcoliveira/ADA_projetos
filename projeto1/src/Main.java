@@ -11,8 +11,13 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         int t = Integer.parseInt(in.readLine());
+        char[] c = new char[1];
         while (t > 0) {
-            Path.setPath(in.readLine().toCharArray());
+            in.read(c);
+            while(c[0] != '\n'){
+                Path.addPlot(c[0]);
+                in.read(c);
+            }
             System.out.println(Path.getResult());
             Path.reset();
             t--;

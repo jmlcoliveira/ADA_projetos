@@ -14,23 +14,22 @@ class Path {
     //minimum infinity value to be used in this implementation
     //the value is the max value each step can take, multiplied by the path length.
     private static final int INFINITY = 600000;
+    private static boolean hasMonsterBefore = false;
+    private static boolean firstRun = true;
 
     /**
      * @return minimum value
      */
     public static int getResult() {
-        compute();
         int min = INFINITY;
         for (int value : values) if (value < min) min = value;
         return min;
     }
 
-    public static void reset(){
+    public static void reset() {
         values = new int[Objects.values().length];
-    }
-
-    public static void setPath(char[] newPath){
-        path=newPath;
+        hasMonsterBefore = false;
+        firstRun = true;
     }
 
     /**
@@ -113,27 +112,22 @@ class Path {
         values[obj.ordinal()] = values[Objects.EMPTY.ordinal()] + 1;
     }
 
-    private static void compute() {
-        boolean hasMonsterBefore = false;
-
-        char elemAtPos = path[0];
-
-        for (Objects o : Objects.values())
-            if (o == Objects.EMPTY) values[o.ordinal()] = 1;
-            else if (o.getValue() == elemAtPos)
-                values[o.ordinal()] = 2;
-            else values[o.ordinal()] = INFINITY;
-
-        for (int i = 1; i < path.length; i++) {
-            switch (path[i]) {
+    public static void addPlot(char plot) {
+        if (firstRun) {
+            for (Objects o : Objects.values())
+                if (o == Objects.EMPTY) values[o.ordinal()] = 1;
+                else if (o.getValue() == plot)
+                    values[o.ordinal()] = 2;
+                else values[o.ordinal()] = INFINITY;
+            firstRun = false;
+        } else {
+            switch (plot) {
                 case EMPTY -> {
                     for (Objects o : Objects.values())
-                        if (values[o.ordinal()] < INFINITY) {
-                            if (o == Objects.EMPTY) {
-                                if (hasMonsterBefore) values[o.ordinal()] += 2;
-                                else values[o.ordinal()]++;
-                            } else values[o.ordinal()] += 3;
-                        }
+                        if (o == Objects.EMPTY) {
+                            if (hasMonsterBefore) values[o.ordinal()] += 2;
+                            else values[o.ordinal()]++;
+                        } else values[o.ordinal()] += 3;
                     hasMonsterBefore = false;
                 }
                 case DOGS -> {
