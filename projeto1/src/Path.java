@@ -2,6 +2,9 @@ import java.util.function.Function;
 
 /**
  * Class containing a path
+ *
+ * @author Guilherme Pocas 60236
+ * @author Joao Oliveira 61052
  */
 class Path {
 
@@ -67,10 +70,12 @@ class Path {
      *
      * @param objects      current object
      * @param isMonsterPos true if the plot has a monster
+     * @param hasMonsterBefore optional parameter with the indication if there was a monster before
      * @return the cost
      */
-    private static int costOfObj(Objects objects, boolean isMonsterPos) {
-        if (!isMonsterPos) return objects == Objects.EMPTY ? 1 : 3;
+    private static int costOfObj(Objects objects, boolean isMonsterPos, boolean...hasMonsterBefore) {
+        if (!isMonsterPos) return objects == Objects.EMPTY ?
+                ((hasMonsterBefore.length>0 && hasMonsterBefore[0]) ? 2 : 1) : 3;
         if (objects == Objects.CLOAK) return 6;
         if (objects == Objects.POTION) return 5;
         if (objects == Objects.HARP) return 4;
@@ -102,10 +107,8 @@ class Path {
      */
     private static void handleObject(Objects obj, boolean hasMonsterBefore) {
         for (Objects o : Objects.values())
-            values[o.ordinal()] += costOfObj(o, false);
+            values[o.ordinal()] += costOfObj(o, false, hasMonsterBefore);
 
-        if (hasMonsterBefore)
-            values[Objects.EMPTY.ordinal()]++; //means they had an object and dropped it
         //it was possible to get here with the empty value,
         //therefore update object value to the min possible +1
         //because they will leave the spot with an object
@@ -124,10 +127,7 @@ class Path {
             switch (plot) {
                 case EMPTY -> {
                     for (Objects o : Objects.values())
-                        if (o == Objects.EMPTY) {
-                            if (hasMonsterBefore) values[o.ordinal()] += 2;
-                            else values[o.ordinal()]++;
-                        } else values[o.ordinal()] += 3;
+                        values[o.ordinal()] += costOfObj(o, false, hasMonsterBefore);
                     hasMonsterBefore = false;
                 }
                 case DOGS -> {
