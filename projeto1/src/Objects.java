@@ -5,17 +5,23 @@
  * @author Joao Oliveira 61052
  */
 public enum Objects {
-    EMPTY('e'),
-    HARP('h'),
-    POTION('p'),
-    CLOAK('c');
+    EMPTY('e', 1),
+    HARP('h', 4),
+    POTION('p', 5),
+    CLOAK('c', 6);
     private final char value;
+    private final int cost;
 
-    Objects(char value) {
+    Objects(char value, int cost) {
         this.value = value;
+        this.cost = cost;
     }
 
     public char getValue() {
         return value;
+    }
+
+    public int getCost() {
+        return cost;
     }
 }

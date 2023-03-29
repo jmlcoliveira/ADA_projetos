@@ -11,9 +11,8 @@ class Path {
     private static final char EMPTY = 'e', HARP = 'h', POTION = 'p', CLOAK = 'c',
             DOGS = '3', TROLL = 't', DRAGON = 'd';
 
-    private static char[] path;
-    //array containing the values of doing the path with each object
-    private static int[] values = new int[Objects.values().length];
+    //array containing the costs of doing the path with each object
+    private static int[] costs = new int[Objects.values().length];
     //minimum infinity value to be used in this implementation
     //the value is the max value each step can take, multiplied by the path length.
     private static final int INFINITY = 600000;
@@ -25,12 +24,12 @@ class Path {
      */
     public static int getResult() {
         int min = INFINITY;
-        for (int value : values) if (value < min) min = value;
+        for (int c : costs) if (c < min) min = c;
         return min;
     }
 
     public static void reset() {
-        values = new int[Objects.values().length];
+        costs = new int[Objects.values().length];
         hasMonsterBefore = false;
         firstRun = true;
     }
@@ -38,48 +37,48 @@ class Path {
     /**
      * checks if it can pass a dog plot with the current object
      *
-     * @param objects possible objects to hold
+     * @param obj possible objects to hold
      * @return true if possible
      */
-    private static boolean canPassDog(Objects objects) {
-        return objects != Objects.EMPTY;
+    private static boolean canPassDog(Objects obj) {
+        return obj != Objects.EMPTY;
     }
 
     /**
      * checks if it can pass a troll plot with the current object
      *
-     * @param objects possible objects to hold
+     * @param obj possible objects to hold
      * @return true if possible
      */
-    private static boolean canPassTroll(Objects objects) {
-        return objects == Objects.POTION || objects == Objects.CLOAK;
+    private static boolean canPassTroll(Objects obj) {
+        return obj == Objects.POTION || obj == Objects.CLOAK;
     }
 
     /**
      * checks if it can pass a dragon plot with the current object
      *
-     * @param objects possible objects to hold
+     * @param obj possible objects to hold
      * @return true if possible
      */
-    private static boolean canPassDragon(Objects objects) {
-        return objects == Objects.CLOAK;
+    private static boolean canPassDragon(Objects obj) {
+        return obj == Objects.CLOAK;
     }
 
     /**
      * calculates the cost of advancing to the next plot
      *
-     * @param objects      current object
-     * @param isMonsterPos true if the plot has a monster
+     * @param obj          current object
+     * @param isMonsterPos     true if the plot has a monster
      * @param hasMonsterBefore optional parameter with the indication if there was a monster before
      * @return the cost
      */
-    private static int costOfObj(Objects objects, boolean isMonsterPos, boolean...hasMonsterBefore) {
-        if (!isMonsterPos) return objects == Objects.EMPTY ?
-                ((hasMonsterBefore.length>0 && hasMonsterBefore[0]) ? 2 : 1) : 3;
-        if (objects == Objects.CLOAK) return 6;
-        if (objects == Objects.POTION) return 5;
-        if (objects == Objects.HARP) return 4;
-        return 1;
+    private static int costOfObj(Objects obj, boolean isMonsterPos, boolean... hasMonsterBefore) {
+        if (!isMonsterPos)
+            if (obj == Objects.EMPTY)
+                return (hasMonsterBefore.length > 0 && hasMonsterBefore[0]) ? 2 : 1;
+            else return 3;
+
+        return obj.getCost();
     }
 
     /**
@@ -91,12 +90,12 @@ class Path {
         int min = INFINITY;
         for (Objects o : Objects.values()) {
             if (monster.apply(o)) {
-                values[o.ordinal()] += costOfObj(o, true);
-                if (values[o.ordinal()] < min) min = values[o.ordinal()];
-            } else values[o.ordinal()] = INFINITY;
+                costs[o.ordinal()] += costOfObj(o, true);
+                if (costs[o.ordinal()] < min) min = costs[o.ordinal()];
+            } else costs[o.ordinal()] = INFINITY;
         }
         //empty always has the min possible value
-        values[Objects.EMPTY.ordinal()] = min;
+        costs[Objects.EMPTY.ordinal()] = min;
     }
 
     /**
@@ -107,27 +106,27 @@ class Path {
      */
     private static void handleObject(Objects obj, boolean hasMonsterBefore) {
         for (Objects o : Objects.values())
-            values[o.ordinal()] += costOfObj(o, false, hasMonsterBefore);
+            costs[o.ordinal()] += costOfObj(o, false, hasMonsterBefore);
 
         //it was possible to get here with the empty value,
         //therefore update object value to the min possible +1
         //because they will leave the spot with an object
-        values[obj.ordinal()] = values[Objects.EMPTY.ordinal()] + 1;
+        costs[obj.ordinal()] = costs[Objects.EMPTY.ordinal()] + 1;
     }
 
     public static void addPlot(char plot) {
         if (firstRun) {
             for (Objects o : Objects.values())
-                if (o == Objects.EMPTY) values[o.ordinal()] = 1;
+                if (o == Objects.EMPTY) costs[o.ordinal()] = 1;
                 else if (o.getValue() == plot)
-                    values[o.ordinal()] = 2;
-                else values[o.ordinal()] = INFINITY;
+                    costs[o.ordinal()] = 2;
+                else costs[o.ordinal()] = INFINITY;
             firstRun = false;
         } else {
             switch (plot) {
                 case EMPTY -> {
                     for (Objects o : Objects.values())
-                        values[o.ordinal()] += costOfObj(o, false, hasMonsterBefore);
+                        costs[o.ordinal()] += costOfObj(o, false, hasMonsterBefore);
                     hasMonsterBefore = false;
                 }
                 case DOGS -> {
