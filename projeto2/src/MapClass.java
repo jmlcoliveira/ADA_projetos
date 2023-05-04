@@ -1,9 +1,9 @@
 import graph.Node;
 
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
+import java.util.PriorityQueue;
 
 public class MapClass {
     private final char[][] map;
@@ -15,7 +15,14 @@ public class MapClass {
         int nodeId = 0;
         Node start = new Node(row, col, nodeId++, 0, 0);
         Map<Node, Node> processed = new HashMap<>(map.length * map[0].length);
-        Queue<Node> unprocessed = new LinkedList<>();
+        PriorityQueue<Node> unprocessed = new PriorityQueue<>(new Comparator<Node>() {
+            @Override
+            public int compare(Node o1, Node o2) {
+                if (o1.getNrJumps() <= o2.getNrJumps() || o1.getCost() <= o2.getCost()) return -1;
+                if (o1.getId() == o2.getId()) return 0;
+                return 1;
+            }
+        });
 
         unprocessed.add(start);
         do {
@@ -62,6 +69,11 @@ public class MapClass {
         }
     }
 
+    public void addRow(String row) {
+        row = "-" + row + "-";
+        map[currRow++] = row.toCharArray();
+    }
+
     //@SuppressWarnings("unchecked")
     /*private void buildGraph(int row, int col){
         Node[] graph = new Node[map.length * map[0].length];
@@ -81,11 +93,6 @@ public class MapClass {
             }
         }
     }*/
-
-    public void addRow(String row) {
-        row = "-" + row + "-";
-        map[currRow++] = row.toCharArray();
-    }
 
     /*enum Directions {
         RIGHT(0, 1),
