@@ -1,8 +1,9 @@
 import graph.Node;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MapClass {
     private final char[][] map;
@@ -10,8 +11,50 @@ public class MapClass {
 
     private int Hrow = -1, Hcol = -1;
 
+    public String getBestPath(int row, int col) {
+        int nodeId = 0;
+        Node start = new Node(row, col, nodeId++, 0, 0);
+        Map<Node, Node> processed = new HashMap<>((map.length * map[0].length) / 2);
+        Queue<Node> unprocessed = new ConcurrentLinkedQueue<>();
+
+        unprocessed.add(start);
+        do {
+            Node n = unprocessed.remove();
+            for (Directions d : Directions.values()) {
+                Node tempNode = new Node(n.getRow(), n.getCol(), nodeId++, n.getCost(), n.getNrJumps() + 1);
+                int dRow = d.getdRow();
+                int dCol = d.getdCol();
+                int nextCol = tempNode.getCol() + dCol;
+                int nextRow = tempNode.getRow() + dRow;
+                char nextPos = map[nextRow][nextCol];
+
+                while (nextPos == '.') {
+                    tempNode.setCol(nextCol);
+                    tempNode.setRow(nextRow);
+                    tempNode.setCost(tempNode.getCost() + 1);
+                    nextCol = tempNode.getCol() + dCol;
+                    nextRow = tempNode.getRow() + dRow;
+                    nextPos = map[nextRow][nextCol];
+                }
+                if (nextPos == 'O' && !tempNode.equals(n)) {
+                    var temp = processed.get(tempNode);
+                    if (temp != null && temp.getCost() >= tempNode.getCost()) {
+                        if (temp.getNrJumps() > tempNode.getNrJumps()) {
+                            processed.remove(temp);
+                            processed.put(tempNode, tempNode);
+                            unprocessed.add(tempNode);
+                        }
+                    } else if (temp == null)
+                        unprocessed.add(tempNode);
+                }
+                if (nextPos == 'H') return String.valueOf(tempNode.getNrJumps());
+            }
+            processed.put(n, n);
+        } while (!unprocessed.isEmpty());
+        return "Stuck";
+    }
+
     public MapClass(int rows, int cols) {
-        //this.map=new int[rows][cols];
         this.map = new char[rows + 2][cols + 2];
         for (int i = 0; i < cols + 2; i++) {
             map[0][i] = '-';
@@ -20,7 +63,6 @@ public class MapClass {
     }
 
     public void addRow(String row) {
-        //map[currRow]=row.toCharArray();
         map[currRow][0] = '-';
         map[currRow][row.length() + 1] = '-';
         int i = 1;
@@ -32,35 +74,29 @@ public class MapClass {
             }
         }
         currRow++;
-        /*int count=0;
-        for(char c : row.toCharArray()){
-            switch (c) {
-                case '.' -> map[currRow][count++] = 0;
-                case 'H' -> map[currRow][count++] = Integer.MIN_VALUE;
-                case '0' -> map[currRow][count++] = Integer.MAX_VALUE;
-            }
-        }
-        currRow++;*/
-        if (currRow == map.length - 1)
-            this.generateGraph();
     }
 
-    @SuppressWarnings("unchecked")
-    private void generateGraph() {
-        Map<Node, List<Node>> adjacent = new HashMap<>();
-        int wall = -1;
+    enum Directions {
+        RIGHT(0, 1),
+        LEFT(0, -1),
+        UP(1, 0),
+        DOWN(-1, 0);
 
-        for (int i = 1; i < map.length; i++) {
-            //do smth
-            int nodePos = -1;
-            for (int j = 1; j < map[i].length; j++) {
-                char c = map[i][j];
-                if ()
-            }
+        private final int dRow;
+        private final int dCol;
+
+        Directions(int dRow, int dCol) {
+            this.dRow = dRow;
+            this.dCol = dCol;
         }
-    }
 
-    public String getBestPath(int rows, int cols) {
+        public int getdCol() {
+            return dCol;
+        }
+
+        public int getdRow() {
+            return dRow;
+        }
     }
 }
 

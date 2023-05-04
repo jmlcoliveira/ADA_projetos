@@ -5,22 +5,60 @@ import java.util.List;
 
 public class Node {
     static int num = 1;
-    int x, y, id;
+    int row, col, id, cost, nrJumps;
     List<Node> adjacentNode;
 
-    public Node(int x, int y) {
-        this.x = x;
-        this.y = y;
-        this.id = num++;
+    public Node(int x, int y, int id, int cost, int nrJumps) {
+        this.row = x;
+        this.col = y;
+        this.id = id;
+        this.cost = cost;
+        this.nrJumps = nrJumps;
         this.adjacentNode = new LinkedList<>();
     }
 
     public int[] getPos() {
-        return new int[]{x, y};
+        return new int[]{row, col};
+    }
+
+    public int getId() {
+        return id;
     }
 
     public List<Node> getAdjacentNode() {
         return this.adjacentNode;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public void setCol(int col) {
+        this.col = col;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public int getNrJumps() {
+        return nrJumps;
+    }
+
+    public void setNrJumps(int nrJumps) {
+        this.nrJumps = nrJumps;
     }
 
     public void addAdjacent(Node n) {
@@ -32,11 +70,11 @@ public class Node {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Node node = (Node) o;
-        return id == node.id;
+        return col == node.getCol() && row == node.getRow();
     }
 
     @Override
     public int hashCode() {
-        return id;
+        return (9000 * row) + col;
     }
 }
