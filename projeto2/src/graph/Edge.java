@@ -1,7 +1,7 @@
 package graph;
 
 class Edge {
-    final Node n1, n2;
+    /*final Node n1, n2;
     int cost;
 
     public Edge(Node n1, Node n2, int cost) {
@@ -12,5 +12,5 @@ class Edge {
 
     public int getCost() {
         return cost;
-    }
+    }*/
 }
