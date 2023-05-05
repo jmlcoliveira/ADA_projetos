@@ -77,4 +77,13 @@ public class Node {
     public int hashCode() {
         return (9000 * row) + col;
     }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "id=" + id +
+                ", cost=" + cost +
+                ", nrJumps=" + nrJumps +
+                '}';
+    }
 }
