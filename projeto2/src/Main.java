@@ -10,13 +10,14 @@ public class Main {
         int rows = Integer.parseInt(line[0]);
         int cols = Integer.parseInt(line[1]);
         int test = Integer.parseInt(line[2]);
-        //long start = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
         MapClass m = new MapClass(rows, cols);
         while (rows > 0) {
             m.addRow(in.readLine());
             rows--;
         }
-        //System.out.printf("Took %dms to load the map.\n", System.currentTimeMillis()-start);
+        long loadTime = System.currentTimeMillis() - start;
+        System.out.printf("Took %dms to load the map.\n", loadTime);
         while (test > 0) {
             line = in.readLine().split(" ");
             rows = Integer.parseInt(line[0]);
@@ -26,5 +27,8 @@ public class Main {
             //System.out.printf("Took %dms to run test %d\n", System.currentTimeMillis()-start, test);
             test--;
         }
+        long timeToRunTests = System.currentTimeMillis() - start;
+        System.out.printf("Took %dms to run all tests\n", timeToRunTests);
+        System.out.println("Total time taken: " + (loadTime + timeToRunTests) + "ms");
     }
 }
