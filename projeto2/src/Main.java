@@ -1,10 +1,11 @@
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader in = new BufferedReader(new FileReader("map.txt"));
         String[] line = in.readLine().split(" ");
 
         int rows = Integer.parseInt(line[0]);
@@ -19,6 +20,7 @@ public class Main {
         }
         long loadTime = System.currentTimeMillis() - start;
         System.out.printf("Took %dms to load the map.\n", loadTime);
+        long timeToRunTests = System.currentTimeMillis();
         while (test > 0) {
             line = in.readLine().split(" ");
             rows = Integer.parseInt(line[0]);
@@ -28,7 +30,7 @@ public class Main {
             System.out.printf("Took %dms to run test %d\n", System.currentTimeMillis()-start, test);
             test--;
         }
-        long timeToRunTests = System.currentTimeMillis() - start;
+        timeToRunTests = System.currentTimeMillis() - timeToRunTests;
         System.out.printf("Took %dms to run all tests\n", timeToRunTests);
         System.out.println("Total time taken: " + (loadTime + timeToRunTests) + "ms");
     }
