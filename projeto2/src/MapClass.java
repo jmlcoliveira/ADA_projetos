@@ -25,7 +25,7 @@ public class MapClass {
     }
 
     public String getBestPath(int row, int col) {
-        int minJumps = Integer.MAX_VALUE;
+        //int minJumps = Integer.MAX_VALUE;
         int nodeId = 0;
         Node start = new Node(row, col, nodeId++, 0, -1, -1);
         Map<Node, Node> processed = new HashMap<>(Math.max(map.length, map[0].length));
@@ -43,8 +43,9 @@ public class MapClass {
         unprocessed.add(start);
         do {
             //this might give a wrong answer if there are multiples nodes with the same nrJumps.
-            if (minJumps != Integer.MAX_VALUE) return String.valueOf(minJumps);
+            //if (minJumps != Integer.MAX_VALUE) return String.valueOf(minJumps);
             Node n = unprocessed.remove();
+
             for (int i = 0; i < 4; i++) {
                 int dRow = D_ROW[i];
                 int dCol = D_COL[i];
@@ -64,8 +65,8 @@ public class MapClass {
                 tempNode.setRow(nextRow - dRow);
 
                 int tempNodeJumps = tempNode.getNrJumps();
-                if (nextPos == 'H' && tempNodeJumps < minJumps)
-                    minJumps = tempNodeJumps;
+                if (nextPos == 'H')
+                    return String.valueOf(tempNodeJumps);
 
                 if (nextPos == 'O' && !tempNode.equals(n)) {
                     Node temp = processed.get(tempNode);
@@ -80,7 +81,7 @@ public class MapClass {
             }
             processed.put(n, n);
         } while (!unprocessed.isEmpty());
-        return (minJumps == Integer.MAX_VALUE) ? "Stuck" : String.valueOf(minJumps);
+        return "Stuck";
     }
 }
 
