@@ -27,13 +27,12 @@ public class MapClass {
     public String getBestPath(int row, int col) {
         int minJumps = Integer.MAX_VALUE;
         int nodeId = 0;
-        Node start = new Node(row, col, nodeId++, 0, 0, -1, -1);
+        Node start = new Node(row, col, nodeId++, 0, -1, -1);
         Map<Node, Node> processed = new HashMap<>(Math.max(map.length, map[0].length));
-
         PriorityQueue<Node> unprocessed = new PriorityQueue<>(new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
-                if (o1.getNrJumps() <= o2.getNrJumps() /*|| o1.getCost() <= o2.getCost()*/) return -1;
+                if (o1.getNrJumps() <= o2.getNrJumps()) return -1;
                 if (o1.getId() == o2.getId()) return 0;
                 return 1;
             }
@@ -47,27 +46,27 @@ public class MapClass {
                 int dCol = D_COL[i];
                 if(dRow == n.getdRow() && dCol == n.getdCol()) continue;
 
-                Node tempNode = new Node(n.getRow(), n.getCol(), nodeId++, n.getCost(), n.getNrJumps() + 1, dRow, dCol);
+                Node tempNode = new Node(n.getRow(), n.getCol(), nodeId++, n.getNrJumps() + 1, dRow, dCol);
                 int nextCol = tempNode.getCol() + dCol;
                 int nextRow = tempNode.getRow() + dRow;
                 char nextPos = map[nextRow][nextCol];
-                int count = 0;
+
                 while (nextPos == '.') {
                     nextCol = nextCol + dCol;
                     nextRow = nextRow + dRow;
                     nextPos = map[nextRow][nextCol];
-                    count++;
                 }
                 tempNode.setCol(nextCol - dCol);
                 tempNode.setRow(nextRow - dRow);
-                //tempNode.setCost(tempNode.getCost() + count);
-                //if (nextPos == 'H') return String.valueOf(tempNode.getNrJumps());
-                if (nextPos == 'H' && tempNode.getNrJumps() < minJumps)
-                    minJumps = tempNode.getNrJumps();
+
+                int tempNodeJumps = tempNode.getNrJumps();
+                if (nextPos == 'H' && tempNodeJumps < minJumps)
+                    minJumps = tempNodeJumps;
+
                 if (nextPos == 'O' && !tempNode.equals(n)) {
                     Node temp = processed.get(tempNode);
-                    if (temp != null /*&& temp.getCost() >= tempNode.getCost()*/) {
-                        if (temp.getNrJumps() > tempNode.getNrJumps()) {
+                    if (temp != null) {
+                        if(temp.getNrJumps() > tempNodeJumps) {
                             processed.replace(tempNode, tempNode);
                             unprocessed.add(tempNode);
                         }

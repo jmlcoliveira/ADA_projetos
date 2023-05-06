@@ -5,16 +5,15 @@ import java.util.List;
 
 public class Node {
     static int num = 1;
-    int row, col, id, cost, nrJumps;
+    int row, col, id, nrJumps;
     List<Node> adjacentNode;
     private int dRow;
     private int dCol;
 
-    public Node(int x, int y, int id, int cost, int nrJumps, int dRow, int dCol) {
+    public Node(int x, int y, int id, int nrJumps, int dRow, int dCol) {
         this.row = x;
         this.col = y;
         this.id = id;
-        this.cost = cost;
         this.nrJumps = nrJumps;
         this.adjacentNode = new LinkedList<>();
     }
@@ -45,14 +44,6 @@ public class Node {
 
     public void setCol(int col) {
         this.col = col;
-    }
-
-    public int getCost() {
-        return cost;
-    }
-
-    public void setCost(int cost) {
-        this.cost = cost;
     }
 
     public int getNrJumps() {
@@ -92,7 +83,6 @@ public class Node {
     public String toString() {
         return "Node{" +
                 "id=" + id +
-                ", cost=" + cost +
                 ", nrJumps=" + nrJumps +
                 '}';
     }
