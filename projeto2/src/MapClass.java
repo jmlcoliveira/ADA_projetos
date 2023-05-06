@@ -25,13 +25,15 @@ public class MapClass {
     }
 
     public String getBestPath(int row, int col) {
+        int minJumps = Integer.MAX_VALUE;
         int nodeId = 0;
-        Node start = new Node(row, col, nodeId++, 0, 0);
+        Node start = new Node(row, col, nodeId++, 0, 0, -1, -1);
         Map<Node, Node> processed = new HashMap<>(Math.max(map.length, map[0].length));
+
         PriorityQueue<Node> unprocessed = new PriorityQueue<>(new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
-                if (o1.getNrJumps() <= o2.getNrJumps() || o1.getCost() <= o2.getCost()) return -1;
+                if (o1.getNrJumps() <= o2.getNrJumps() /*|| o1.getCost() <= o2.getCost()*/) return -1;
                 if (o1.getId() == o2.getId()) return 0;
                 return 1;
             }
@@ -41,9 +43,11 @@ public class MapClass {
         do {
             Node n = unprocessed.remove();
             for (int i = 0; i < 4; i++) {
-                Node tempNode = new Node(n.getRow(), n.getCol(), nodeId++, n.getCost(), n.getNrJumps() + 1);
                 int dRow = D_ROW[i];
                 int dCol = D_COL[i];
+                if(dRow == n.getdRow() && dCol == n.getdCol()) continue;
+
+                Node tempNode = new Node(n.getRow(), n.getCol(), nodeId++, n.getCost(), n.getNrJumps() + 1, dRow, dCol);
                 int nextCol = tempNode.getCol() + dCol;
                 int nextRow = tempNode.getRow() + dRow;
                 char nextPos = map[nextRow][nextCol];
@@ -56,22 +60,24 @@ public class MapClass {
                 }
                 tempNode.setCol(nextCol - dCol);
                 tempNode.setRow(nextRow - dRow);
-                tempNode.setCost(tempNode.getCost() + count);
-                if (nextPos == 'H') return String.valueOf(tempNode.getNrJumps());
+                //tempNode.setCost(tempNode.getCost() + count);
+                //if (nextPos == 'H') return String.valueOf(tempNode.getNrJumps());
+                if (nextPos == 'H' && tempNode.getNrJumps() < minJumps)
+                    minJumps = tempNode.getNrJumps();
                 if (nextPos == 'O' && !tempNode.equals(n)) {
-                    var temp = processed.get(tempNode);
-                    if (temp != null && temp.getCost() >= tempNode.getCost()) {
+                    Node temp = processed.get(tempNode);
+                    if (temp != null /*&& temp.getCost() >= tempNode.getCost()*/) {
                         if (temp.getNrJumps() > tempNode.getNrJumps()) {
                             processed.replace(tempNode, tempNode);
                             unprocessed.add(tempNode);
                         }
-                    } else if (temp == null)
+                    } else
                         unprocessed.add(tempNode);
                 }
             }
             processed.put(n, n);
         } while (!unprocessed.isEmpty());
-        return "Stuck";
+        return (minJumps == Integer.MAX_VALUE) ? "Stuck" : String.valueOf(minJumps);
     }
 }
 

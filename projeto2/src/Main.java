@@ -16,8 +16,8 @@ public class Main {
             m.addRow(in.readLine());
             rows--;
         }
-        long loadTime = System.currentTimeMillis() - start;
-        System.out.printf("Took %dms to load the map.\n", loadTime);
+        //long loadTime = System.currentTimeMillis() - start;
+        //System.out.printf("Took %dms to load the map.\n", loadTime);
         while (test > 0) {
             line = in.readLine().split(" ");
             rows = Integer.parseInt(line[0]);
@@ -28,7 +28,7 @@ public class Main {
             test--;
         }
         long timeToRunTests = System.currentTimeMillis() - start;
-        System.out.printf("Took %dms to run all tests\n", timeToRunTests);
-        System.out.println("Total time taken: " + (loadTime + timeToRunTests) + "ms");
+        //System.out.printf("Took %dms to run all tests\n", timeToRunTests);
+        //System.out.println("Total time taken: " + (loadTime + timeToRunTests) + "ms");
     }
 }

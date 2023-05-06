@@ -7,8 +7,10 @@ public class Node {
     static int num = 1;
     int row, col, id, cost, nrJumps;
     List<Node> adjacentNode;
+    private int dRow;
+    private int dCol;
 
-    public Node(int x, int y, int id, int cost, int nrJumps) {
+    public Node(int x, int y, int id, int cost, int nrJumps, int dRow, int dCol) {
         this.row = x;
         this.col = y;
         this.id = id;
@@ -63,6 +65,14 @@ public class Node {
 
     public void addAdjacent(Node n) {
         this.adjacentNode.add(n);
+    }
+
+    public int getdRow() {
+        return dRow;
+    }
+
+    public int getdCol() {
+        return dCol;
     }
 
     @Override
