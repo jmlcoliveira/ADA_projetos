@@ -1,9 +1,6 @@
 import graph.Node;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class MapClass {
     private final char[][] map;
@@ -27,7 +24,7 @@ public class MapClass {
     public String getBestPath(int row, int col) {
         Node start = new Node(row, col, 0, 0, -1, -1);
         Map<Node, Node> processed = new HashMap<>(Math.max(map.length, map[0].length));
-        PriorityQueue<Node> unprocessed = new PriorityQueue<>(new Comparator<Node>() {
+        Queue<Node> unprocessed = new PriorityQueue<>(new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
                 if (o1.getNrJumps() < o2.getNrJumps() || o1.getCost() < o2.getCost()) {
@@ -43,7 +40,10 @@ public class MapClass {
         int minH = Integer.MAX_VALUE;
         do {
             Node n = unprocessed.remove();
-
+            if (n.getNrJumps() >= minH) {
+                processed.put(n, n);
+                continue;
+            }
             for (int i = 0; i < 4; i++) {
                 int dRow = D_ROW[i];
                 int dCol = D_COL[i];
@@ -53,6 +53,7 @@ public class MapClass {
                 int nextCol = tempNode.getCol() + dCol;
                 int nextRow = tempNode.getRow() + dRow;
                 char nextPos = map[nextRow][nextCol];
+                if (nextPos == 'O') continue;
                 int cost = 0;
                 while (nextPos == '.') {
                     nextCol = nextCol + dCol;
@@ -66,7 +67,8 @@ public class MapClass {
 
                 int tempNodeJumps = tempNode.getNrJumps();
                 if (nextPos == 'H') {
-                    if (minH > tempNode.getNrJumps()) minH = tempNode.getNrJumps();
+                    if (minH > tempNodeJumps)
+                        minH = tempNodeJumps;
                     continue;
                 }
 

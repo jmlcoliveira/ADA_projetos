@@ -1,14 +1,10 @@
 package graph;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class Node {
     private int row;
     private int col;
     private final int id;
     private int nrJumps;
-    private final List<Node> adjacentNode;
     private final int dRow;
     private final int dCol;
     private int cost;
@@ -19,7 +15,6 @@ public class Node {
         this.id = (901 * x) + y;
         this.cost = cost;
         this.nrJumps = nrJumps;
-        this.adjacentNode = new LinkedList<>();
         this.dRow = dRow;
         this.dCol = dCol;
     }
@@ -30,10 +25,6 @@ public class Node {
 
     public int getId() {
         return id;
-    }
-
-    public List<Node> getAdjacentNode() {
-        return this.adjacentNode;
     }
 
     public int getRow() {
@@ -62,10 +53,6 @@ public class Node {
 
     public void setNrJumps(int nrJumps) {
         this.nrJumps = nrJumps;
-    }
-
-    public void addAdjacent(Node n) {
-        this.adjacentNode.add(n);
     }
 
     public int getdRow() {
@@ -98,6 +85,9 @@ public class Node {
         return "Node{" +
                 "id=" + id +
                 ", nrJumps=" + nrJumps +
+                ", cost=" + cost +
+                ", dRow=" + dRow +
+                ", dCol=" + dCol +
                 '}';
     }
 }
