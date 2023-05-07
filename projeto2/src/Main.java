@@ -1,12 +1,11 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        //BufferedReader in = new BufferedReader(new FileReader("map.txt"));
+        //BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader in = new BufferedReader(new FileReader("map.txt"));
         String[] line = in.readLine().split(" ");
 
         int rows = Integer.parseInt(line[0]);
@@ -27,8 +26,8 @@ public class Main {
             rows = Integer.parseInt(line[0]);
             cols = Integer.parseInt(line[1]);
             start = System.currentTimeMillis();
-            System.out.println(m.getBestPath1(rows, cols));
-            System.out.printf("Took %dms to run test %d\n", System.currentTimeMillis()-start, test);
+            System.out.println(m.getBestPath(rows, cols));
+            System.out.printf("Took %dms to run test %d\n", System.currentTimeMillis() - start, test);
             test--;
         }
         timeToRunTests = System.currentTimeMillis() - timeToRunTests;

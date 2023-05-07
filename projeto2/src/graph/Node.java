@@ -4,7 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Node {
-    private int row, col, id, nrJumps;
+    private int row;
+    private int col;
+    private final int id;
+    private int nrJumps;
     private final List<Node> adjacentNode;
     private int dRow;
     private int dCol;
@@ -15,6 +18,8 @@ public class Node {
         this.id = (901 * x) + y;
         this.nrJumps = nrJumps;
         this.adjacentNode = new LinkedList<>();
+        //this.dRow = dRow;
+        //this.dCol = dCol;
     }
 
     public int[] getPos() {
@@ -75,7 +80,7 @@ public class Node {
 
     @Override
     public int hashCode() {
-        return id;
+        return (901 * row) + col;
     }
 
     @Override
