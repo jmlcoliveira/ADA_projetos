@@ -22,9 +22,16 @@ public class MapClass {
     public void addRow(String row) {
         row = "-" + row + "-";
         map[currRow++] = row.toCharArray();
-        if (currRow == map.length - 1) {
-            //buildGraph();
-        }
+        /*if (currRow == map.length - 1) {
+            for(int i=1; i<map.length-1;i++){
+                for(int j=1; j<map[0].length-1;j++){
+                    if(map[i][j] == 'H'){
+                        goal = new Node(i,j,0,0,0,0);
+                        return;
+                    }
+                }
+            }
+        }*/
     }
 
     private void buildGraph() {
@@ -179,20 +186,25 @@ public class MapClass {
     public String getBestPath(int row, int col) {
         //int minJumps = Integer.MAX_VALUE;
         int nodeId = 0;
-        Node start = new Node(row, col, nodeId++, 0, -1, -1);
+        Node start = new Node(row, col, 0, 0, -1, -1);
         Map<Node, Node> processed = new HashMap<>(Math.max(map.length, map[0].length));
         PriorityQueue<Node> unprocessed = new PriorityQueue<>(new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
-                return o1.getNrJumps() - o2.getNrJumps();
-                /*if (o1.getNrJumps() < o2.getNrJumps()) return -1;
+                //return o1.getCost()-o2.getCost();
+                //return o1.getNrJumps() - o2.getNrJumps();
+                if (o1.getNrJumps() < o2.getNrJumps() || o1.getCost() < o2.getCost()) {
+                    if (o1.getNrJumps() < o2.getNrJumps()) return (o1.getNrJumps() - o2.getNrJumps());
+                    return o1.getCost() - o2.getCost();
+                }
                 if (o1.getId() == o2.getId()) return 0;
-                return 1;*/
+                return 1;
             }
         });
         //Queue<Node> unprocessed = new LinkedList<>();
 
         unprocessed.add(start);
+        int minH = Integer.MAX_VALUE;
         do {
             //this might give a wrong answer if there are multiples nodes with the same nrJumps.
             //if (minJumps != Integer.MAX_VALUE) return String.valueOf(minJumps);
@@ -201,24 +213,28 @@ public class MapClass {
             for (int i = 0; i < 4; i++) {
                 int dRow = D_ROW[i];
                 int dCol = D_COL[i];
-                if (dRow == n.getdRow() && dCol == n.getdCol()) continue;
+                if (dRow == -n.getdRow() && dCol == -n.getdCol()) continue;
 
-                Node tempNode = new Node(n.getRow(), n.getCol(), nodeId++, n.getNrJumps() + 1, dRow, dCol);
+                Node tempNode = new Node(n.getRow(), n.getCol(), n.getCost(), n.getNrJumps() + 1, dRow, dCol);
                 int nextCol = tempNode.getCol() + dCol;
                 int nextRow = tempNode.getRow() + dRow;
                 char nextPos = map[nextRow][nextCol];
-
+                int cost = 0;
                 while (nextPos == '.') {
                     nextCol = nextCol + dCol;
                     nextRow = nextRow + dRow;
                     nextPos = map[nextRow][nextCol];
+                    cost++;
                 }
                 tempNode.setCol(nextCol - dCol);
                 tempNode.setRow(nextRow - dRow);
+                tempNode.setCost(tempNode.getCost() + cost);
 
                 int tempNodeJumps = tempNode.getNrJumps();
-                if (nextPos == 'H')
-                    return String.valueOf(tempNodeJumps);
+                if (nextPos == 'H') {
+                    if (minH > tempNode.getNrJumps()) minH = tempNode.getNrJumps();
+                    continue;
+                }
 
                 if (nextPos == 'O' && !tempNode.equals(n)) {
                     Node temp = processed.get(tempNode);
@@ -233,6 +249,6 @@ public class MapClass {
             }
             processed.put(n, n);
         } while (!unprocessed.isEmpty());
-        return "Stuck";
+        return minH < Integer.MAX_VALUE ? String.valueOf(minH) : "Stuck";
     }
 }

@@ -9,17 +9,19 @@ public class Node {
     private final int id;
     private int nrJumps;
     private final List<Node> adjacentNode;
-    private int dRow;
-    private int dCol;
+    private final int dRow;
+    private final int dCol;
+    private int cost;
 
-    public Node(int x, int y, int id, int nrJumps, int dRow, int dCol) {
+    public Node(int x, int y, int cost, int nrJumps, int dRow, int dCol) {
         this.row = x;
         this.col = y;
         this.id = (901 * x) + y;
+        this.cost = cost;
         this.nrJumps = nrJumps;
         this.adjacentNode = new LinkedList<>();
-        //this.dRow = dRow;
-        //this.dCol = dCol;
+        this.dRow = dRow;
+        this.dCol = dCol;
     }
 
     public int[] getPos() {
@@ -46,6 +48,10 @@ public class Node {
         return col;
     }
 
+    public int getCost() {
+        return cost;
+    }
+
     public void setCol(int col) {
         this.col = col;
     }
@@ -68,6 +74,10 @@ public class Node {
 
     public int getdCol() {
         return dCol;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
     }
 
     @Override
