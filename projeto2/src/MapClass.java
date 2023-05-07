@@ -151,7 +151,7 @@ public class MapClass {
                 }
                 if(nextPos=='H')return "1";
                 if(nextPos=='O'){
-                    temp.addAdjacent(graph.get(new Node(nextRow-1, nextCol-1, 0, 0,0, 0)));
+                    temp.addAdjacent(graph.get(new Node(nextRow-dRow, nextCol-dCol, 0, 0,0, 0)));
                 }
             }
             start=temp;
