@@ -27,7 +27,7 @@ public class Main {
             rows = Integer.parseInt(line[0]);
             cols = Integer.parseInt(line[1]);
             start = System.currentTimeMillis();
-            System.out.println(m.getBestPath(rows, cols));
+            System.out.println(m.getBestPath1(rows, cols));
             System.out.printf("Took %dms to run test %d\n", System.currentTimeMillis()-start, test);
             test--;
         }

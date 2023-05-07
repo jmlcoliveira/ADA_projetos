@@ -29,7 +29,10 @@ public class MapClass {
             Node n1 = null;
             Node n2 = null;
             int goalLinked = -1;
-            for (int i = 1; i < map.length; i++) {
+
+            for (int i = 1; i < map.length-1; i++) {
+                if(i==3)
+                    System.out.printf("\0");
                 List<Node> toLink = new LinkedList<>();
                 for (int j = 1; j < cols - 1; j++) {
                     char curr = map[i][j];
@@ -37,7 +40,7 @@ public class MapClass {
                     char before = map[i][j - 1];
                     char after = map[i][j + 1];
                     char above = map[i - 1][j];
-                    char below = map[i - 1][j];
+                    char below = map[i + 1][j];
                     if (curr == 'H') {
                         goal = new Node(i, j, 0, 0, 0, 0);
                         graph.put(goal, goal);
@@ -46,7 +49,9 @@ public class MapClass {
                             goalLinked = j;
                             goal.addAdjacent(n1);
                         }
-                    } else if ((before == 'O' || after == '0') && (above == '.' || below == '.') && curr == '.') {
+                    }
+                    else if (before == 'O' && after == 'O') continue;
+                    else if ((before == 'O' || after == 'O') && (above == '.' || below == '.') && curr == '.') {
                         if (n1 == null){
                             n1 = new Node(i, j, 0, 0, 0, 0);
                         }
@@ -69,6 +74,7 @@ public class MapClass {
                             for(Node n : toLink){
                                 n.addAdjacent(n1);
                                 n.addAdjacent(n2);
+                                graph.put(n, n);
                             }
                             toLink = new LinkedList<>();
                             n1 = null;
@@ -81,25 +87,28 @@ public class MapClass {
                 if(n1!=null)
                     for(Node n : toLink)
                         n.addAdjacent(n1);
+                n1=null;
+                n2=null;
             }
             n1 = null;
             n2 = null;
             assert goal != null;
             for (int j = 1; j < cols - 1; j++) {
                 List<Node> toLink = new LinkedList<>();
-                for (int i = 1; i < map.length; i++) {
+                for (int i = 1; i < map.length-1; i++) {
                     char curr = map[i][j];
                     if (curr == 'O') continue;
                     char before = map[i][j - 1];
                     char after = map[i][j + 1];
                     char above = map[i - 1][j];
-                    char below = map[i - 1][j];
+                    char below = map[i + 1][j];
                     if(curr=='H'){
                         if (n1 != null) {
                             n1.addAdjacent(goal);
                             goal.addAdjacent(n1);
                         }
                     }
+                    else if (above == 'O' && below == 'O') continue;
                     else if ((before == '.' || after == '.') && (above == 'O' || below == 'O') && !(before == '.' && after == '.') && curr == '.') {
                         var toSearch = new Node(i, j, 0, 0, 0, 0);
                         var temp = graph.get(toSearch);
@@ -111,6 +120,7 @@ public class MapClass {
                             for(Node n : toLink){
                                 n.addAdjacent(n1);
                                 n.addAdjacent(temp);
+                                graph.put(n, n);
                             }
                             toLink = new LinkedList<>();
                             n1=null;
@@ -119,6 +129,8 @@ public class MapClass {
                     else if((before == '.' || after == '.') && !(before == '.' && after == '.') && curr == '.')
                         toLink.add(graph.get(new Node(i, j, 0, 0, 0, 0)));
                 }
+                n1=null;
+                n2=null;
             }
         }
     }
