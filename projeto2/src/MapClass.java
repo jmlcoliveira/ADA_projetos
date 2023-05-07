@@ -31,8 +31,6 @@ public class MapClass {
             int goalLinked = -1;
 
             for (int i = 1; i < map.length-1; i++) {
-                if(i==3)
-                    System.out.printf("\0");
                 List<Node> toLink = new LinkedList<>();
                 for (int j = 1; j < cols - 1; j++) {
                     char curr = map[i][j];
@@ -50,7 +48,7 @@ public class MapClass {
                             goal.addAdjacent(n1);
                         }
                     }
-                    else if (before == 'O' && after == 'O') continue;
+                    //else if (before == 'O' && after == 'O') continue;
                     else if ((before == 'O' || after == 'O') && (above == '.' || below == '.') && curr == '.') {
                         if (n1 == null){
                             n1 = new Node(i, j, 0, 0, 0, 0);
@@ -108,7 +106,7 @@ public class MapClass {
                             goal.addAdjacent(n1);
                         }
                     }
-                    else if (above == 'O' && below == 'O') continue;
+                    //else if (above == 'O' && below == 'O') continue;
                     else if ((before == '.' || after == '.') && (above == 'O' || below == 'O') && !(before == '.' && after == '.') && curr == '.') {
                         var toSearch = new Node(i, j, 0, 0, 0, 0);
                         var temp = graph.get(toSearch);
@@ -142,8 +140,8 @@ public class MapClass {
             for (int i = 0; i < 4; i++) {
                 int dRow = D_ROW[i];
                 int dCol = D_COL[i];
-                int nextCol = row + dCol;
-                int nextRow = col + dRow;
+                int nextCol = col + dCol;
+                int nextRow = row + dRow;
                 char nextPos = map[nextRow][nextCol];
 
                 while (nextPos == '.') {
