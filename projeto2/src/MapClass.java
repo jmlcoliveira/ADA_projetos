@@ -1,17 +1,19 @@
 import graph.Node;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 public class MapClass {
     private final char[][] map;
     private final int[] D_ROW = {1, -1, 0, 0};
     private final int[] D_COL = {0, 0, 1, -1};
     private int currRow = 1;
-
-    private final Map<Node, Node> graph;
+    private final Node[] graph;
 
     public MapClass(int rows, int cols) {
-        this.graph = new HashMap<>(rows * cols);
+        this.graph = new Node[rows * cols * 40];
         this.map = new char[rows + 2][cols + 2];
         for (int i = 0; i < cols + 2; i++) {
             map[0][i] = '-';
@@ -84,7 +86,7 @@ public class MapClass {
 
                 Node tempNode = new Node(n.getRow(), n.getCol(), n.getNrJumps() + 1, dRow, dCol);
 
-                Node nodeAtGraph = graph.get(n);
+                Node nodeAtGraph = graph[n.getId()];
                 if (nodeAtGraph != null) {
                     Node adj = nodeAtGraph.getAdjacent(i);
                     if (adj != null) {
@@ -119,7 +121,7 @@ public class MapClass {
                     }
                 }
             }
-            graph.putIfAbsent(n, n);
+            graph[n.getId()] = n;
             processed.add(n);
         } while (!unprocessed.isEmpty());
         return "Stuck";

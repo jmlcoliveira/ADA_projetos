@@ -1,6 +1,7 @@
 package graph;
 
 public class Node {
+    public static int count = 0;
     private int row;
     private int col;
     private final int id;
@@ -10,6 +11,7 @@ public class Node {
     private final Node[] adjacent;
 
     public Node(int x, int y, int nrJumps, int dRow, int dCol) {
+        count++;
         this.adjacent = new Node[4];
         this.row = x;
         this.col = y;
@@ -24,7 +26,7 @@ public class Node {
     }
 
     public int getId() {
-        return id;
+        return count;
     }
 
     public int getRow() {
