@@ -7,13 +7,11 @@ public class Node {
     private int nrJumps;
     private final int dRow;
     private final int dCol;
-    private int cost;
 
-    public Node(int x, int y, int cost, int nrJumps, int dRow, int dCol) {
+    public Node(int x, int y, int nrJumps, int dRow, int dCol) {
         this.row = x;
         this.col = y;
         this.id = (901 * x) + y;
-        this.cost = cost;
         this.nrJumps = nrJumps;
         this.dRow = dRow;
         this.dCol = dCol;
@@ -39,10 +37,6 @@ public class Node {
         return col;
     }
 
-    public int getCost() {
-        return cost;
-    }
-
     public void setCol(int col) {
         this.col = col;
     }
@@ -63,10 +57,6 @@ public class Node {
         return dCol;
     }
 
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,7 +75,6 @@ public class Node {
         return "Node{" +
                 "id=" + id +
                 ", nrJumps=" + nrJumps +
-                ", cost=" + cost +
                 ", dRow=" + dRow +
                 ", dCol=" + dCol +
                 '}';
