@@ -1,8 +1,5 @@
 package graph;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class Node {
     private int row;
     private int col;
@@ -10,10 +7,10 @@ public class Node {
     private int nrJumps;
     private final int dRow;
     private final int dCol;
-    private List<Node> adjacent;
+    private final Node[] adjacent;
 
     public Node(int x, int y, int nrJumps, int dRow, int dCol) {
-        this.adjacent = new LinkedList<>();
+        this.adjacent = new Node[4];
         this.row = x;
         this.col = y;
         this.id = (901 * x) + y;
@@ -46,6 +43,10 @@ public class Node {
         this.col = col;
     }
 
+    public void setAdjacent(int i, Node tempNode) {
+        this.adjacent[i] = tempNode;
+    }
+
     public int getNrJumps() {
         return nrJumps;
     }
@@ -62,8 +63,8 @@ public class Node {
         return dCol;
     }
 
-    public List<Node> getAdjacent() {
-        return adjacent;
+    public Node getAdjacent(int i) {
+        return adjacent[i];
     }
 
     @Override
