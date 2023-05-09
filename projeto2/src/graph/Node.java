@@ -5,18 +5,16 @@ public class Node {
     private int row;
     private int col;
     private final int id;
-    private int nrJumps;
     private final int dRow;
     private final int dCol;
     private final Node[] adjacent;
 
-    public Node(int x, int y, int nrJumps, int dRow, int dCol) {
+    public Node(int x, int y, int dRow, int dCol) {
         count++;
         this.adjacent = new Node[4];
         this.row = x;
         this.col = y;
         this.id = (901 * x) + y;
-        this.nrJumps = nrJumps;
         this.dRow = dRow;
         this.dCol = dCol;
     }
@@ -26,7 +24,7 @@ public class Node {
     }
 
     public int getId() {
-        return count;
+        return (901 * row) + col;
     }
 
     public int getRow() {
@@ -47,14 +45,6 @@ public class Node {
 
     public void setAdjacent(int i, Node tempNode) {
         this.adjacent[i] = tempNode;
-    }
-
-    public int getNrJumps() {
-        return nrJumps;
-    }
-
-    public void setNrJumps(int nrJumps) {
-        this.nrJumps = nrJumps;
     }
 
     public int getdRow() {
@@ -86,7 +76,6 @@ public class Node {
     public String toString() {
         return "Node{" +
                 "id=" + id +
-                ", nrJumps=" + nrJumps +
                 ", dRow=" + dRow +
                 ", dCol=" + dCol +
                 '}';
