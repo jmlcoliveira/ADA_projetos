@@ -1,9 +1,6 @@
 import graph.Node;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class MapClass {
     private final char[][] map;
@@ -11,7 +8,10 @@ public class MapClass {
     private final int[] D_COL = {0, 0, 1, -1};
     private int currRow = 1;
 
+    private Map<Node, Node> graph;
+
     public MapClass(int rows, int cols) {
+        this.graph = new HashMap<>();
         this.map = new char[rows + 2][cols + 2];
         for (int i = 0; i < cols + 2; i++) {
             map[0][i] = '-';
@@ -39,10 +39,23 @@ public class MapClass {
                 if (dRow == -n.getdRow() && dCol == -n.getdCol()) continue;
 
                 Node tempNode = new Node(n.getRow(), n.getCol(), n.getNrJumps() + 1, dRow, dCol);
+
+                if(graph.containsKey(n)) {
+                    for(Node adj : graph.get(n).getAdjacent()) {
+                        if(adj.getdRow() == dRow && adj.getdCol() == dCol) {
+                            adj.setNrJumps(n.getNrJumps()+1);
+                            tempNode = adj;
+                            if (!processed.contains(tempNode))
+                                unprocessed.add(tempNode);
+                        }
+                    }
+                }
+
                 int nextCol = tempNode.getCol() + dCol;
                 int nextRow = tempNode.getRow() + dRow;
                 char nextPos = map[nextRow][nextCol];
                 if (nextPos == 'O') continue;
+
                 while (nextPos == '.') {
                     nextCol = nextCol + dCol;
                     nextRow = nextRow + dRow;
@@ -56,10 +69,13 @@ public class MapClass {
                     return String.valueOf(tempNodeJumps);
 
                 if (nextPos == 'O' && !tempNode.equals(n)) {
-                    if (!processed.contains(tempNode))
+                    if (!processed.contains(tempNode)) {
                         unprocessed.add(tempNode);
+                        n.getAdjacent().add(tempNode);
+                    }
                 }
             }
+            graph.putIfAbsent(n,n);
             processed.add(n);
         } while (!unprocessed.isEmpty());
         return "Stuck";
