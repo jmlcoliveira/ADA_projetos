@@ -1,5 +1,3 @@
-import graph.Node;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -11,9 +9,11 @@ public class MapClass {
     private final int[] D_COL = {0, 0, 1, -1};
     private int currRow = 1;
     private final Node[] graph;
+    static int multiplyFactor;
 
     public MapClass(int rows, int cols) {
-        this.graph = new Node[rows * 901 + cols];
+        multiplyFactor = Math.max(rows, cols);
+        this.graph = new Node[rows * multiplyFactor + cols + 1];
         this.map = new char[rows + 2][cols + 2];
         for (int i = 0; i < cols + 2; i++) {
             map[0][i] = '-';

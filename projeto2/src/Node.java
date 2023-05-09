@@ -1,10 +1,8 @@
-package graph;
-
 public class Node {
     public static int count = 0;
     private int row;
     private int col;
-    private final int id;
+    private int id;
     private final int dRow;
     private final int dCol;
     private final Node[] adjacent;
@@ -14,17 +12,13 @@ public class Node {
         this.adjacent = new Node[4];
         this.row = x;
         this.col = y;
-        this.id = (901 * x) + y;
+        this.id = (MapClass.multiplyFactor * x) + y;
         this.dRow = dRow;
         this.dCol = dCol;
     }
 
-    public int[] getPos() {
-        return new int[]{row, col};
-    }
-
     public int getId() {
-        return (901 * row) + col;
+        return id;
     }
 
     public int getRow() {
@@ -33,6 +27,7 @@ public class Node {
 
     public void setRow(int row) {
         this.row = row;
+        this.id = (MapClass.multiplyFactor * row) + col;
     }
 
     public int getCol() {
@@ -41,6 +36,7 @@ public class Node {
 
     public void setCol(int col) {
         this.col = col;
+        this.id = (MapClass.multiplyFactor * row) + col;
     }
 
     public void setAdjacent(int i, Node tempNode) {
@@ -64,12 +60,12 @@ public class Node {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Node node = (Node) o;
-        return col == node.getCol() && row == node.getRow();
+        return node.getId() == this.getId();
     }
 
     @Override
     public int hashCode() {
-        return (901 * row) + col;
+        return this.getId();
     }
 
     @Override
