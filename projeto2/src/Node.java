@@ -1,24 +1,34 @@
+/**
+ * Node class that represents a position in the map and its adjacent nodes
+ *
+ * @author Guilher Pocas 60236
+ * @author Joao Oliveira 61052
+ */
 public class Node {
-    public static int count = 0;
-    private int row;
-    private int col;
-    private int id;
+    //direction of the node
     private final int dRow;
-    private final int dCol;
+    private int col;
+    //array of adjacent nodes
     private final Node[] adjacent;
+    private final int dCol;
+    //row and column of the node
+    private int row;
 
+    /**
+     * Constructor
+     *
+     * @param x    row of the node
+     * @param y    column of the node
+     * @param dRow direction of the node
+     * @param dCol direction of the node
+     */
     public Node(int x, int y, int dRow, int dCol) {
-        count++;
+        //initialize adjacent array with 4 positions, one for each direction
         this.adjacent = new Node[4];
         this.row = x;
         this.col = y;
-        this.id = (MapClass.multiplyFactor * x) + y;
         this.dRow = dRow;
         this.dCol = dCol;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public int getRow() {
@@ -27,7 +37,6 @@ public class Node {
 
     public void setRow(int row) {
         this.row = row;
-        this.id = (MapClass.multiplyFactor * row) + col;
     }
 
     public int getCol() {
@@ -36,9 +45,14 @@ public class Node {
 
     public void setCol(int col) {
         this.col = col;
-        this.id = (MapClass.multiplyFactor * row) + col;
     }
 
+    /**
+     * Method that sets the adjacent node in the given direction
+     *
+     * @param i        direction
+     * @param tempNode adjacent node
+     */
     public void setAdjacent(int i, Node tempNode) {
         this.adjacent[i] = tempNode;
     }
@@ -51,29 +65,13 @@ public class Node {
         return dCol;
     }
 
+    /**
+     * Method that returns the adjacent node in the given direction
+     *
+     * @param i direction
+     * @return adjacent node
+     */
     public Node getAdjacent(int i) {
         return adjacent[i];
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
-        return node.getId() == this.getId();
-    }
-
-    @Override
-    public int hashCode() {
-        return this.getId();
-    }
-
-    @Override
-    public String toString() {
-        return "Node{" +
-                "id=" + id +
-                ", dRow=" + dRow +
-                ", dCol=" + dCol +
-                '}';
     }
 }
