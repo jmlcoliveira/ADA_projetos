@@ -13,13 +13,21 @@ public class MapClass {
     //Arrays that represent the directions
     private final int[] D_ROW = {1, -1, 0, 0};
     private final int[] D_COL = {0, 0, 1, -1};
+    private final int DIRECTION_TO_EXPLORE = 4;
     //Graph containing all the visited nodes
     private final Node[][] graph;
     //Current row
     private int currRow = 1;
+    //Constants
+    private final char
+            WALL = 'O',
+            HOLE = 'H',
+            EMPTY = '.',
+            OFF_BOUNDARIES = '-';
 
     /**
      * Constructor
+     *
      * @param rows number of rows
      * @param cols number of columns
      */
@@ -27,8 +35,8 @@ public class MapClass {
         this.graph = new Node[rows + 1][cols + 1];
         this.map = new char[rows + 2][cols + 2];
         for (int i = 0; i < cols + 2; i++) {
-            map[0][i] = '-';
-            map[rows + 1][i] = '-';
+            map[0][i] = OFF_BOUNDARIES;
+            map[rows + 1][i] = OFF_BOUNDARIES;
         }
     }
 
@@ -37,7 +45,7 @@ public class MapClass {
      * @param row row to be added
      */
     public void addRow(String row) {
-        row = "-" + row + "-";
+        row = OFF_BOUNDARIES + row + OFF_BOUNDARIES;
         map[currRow++] = row.toCharArray();
     }
 
@@ -48,9 +56,9 @@ public class MapClass {
      * @return the best path if found or "Stuck" if not
      */
     public String getBestPath(int row, int col) {
-        if (map[row][col] == 'H') return "0";
+        if (map[row][col] == HOLE) return "0";
         //starting node
-        Node start = new Node(row, col, -1, -1);
+        Node start = new Node(row, col, 0, 0);
         //initialize processed array
         boolean[][] processed = new boolean[graph.length][graph[0].length];
         //initialize unprocessed queues
@@ -67,7 +75,7 @@ public class MapClass {
                 int r = n.getRow();
                 int c = n.getCol();
                 if (processed[r][c]) continue;
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < DIRECTION_TO_EXPLORE; i++) {
                     int dRow = D_ROW[i];
                     int dCol = D_COL[i];
                     //if the node is going back to the previous node, skip it
@@ -91,10 +99,10 @@ public class MapClass {
                     int nextRow = tempNode.getRow() + dRow;
                     char nextPos = map[nextRow][nextCol];
                     //if the position is a wall, skip it because it can't move in that direction
-                    if (nextPos == 'O') continue;
+                    if (nextPos == WALL) continue;
 
                     //find a position that is not a wall
-                    while (nextPos == '.') {
+                    while (nextPos == EMPTY) {
                         nextCol = nextCol + dCol;
                         nextRow = nextRow + dRow;
                         nextPos = map[nextRow][nextCol];
@@ -103,12 +111,12 @@ public class MapClass {
                     tempNode.setRow(nextRow - dRow);
 
                     //if the position is the hole, return the level
-                    if (nextPos == 'H') {
+                    if (nextPos == HOLE) {
                         return String.valueOf(level);
                     }
 
                     //if the position is a wall, means that it moved and got there
-                    if (nextPos == 'O') {
+                    if (nextPos == WALL) {
                         if (!processed[tempNode.getRow()][tempNode.getCol()]) {
                             unprocessed2.add(tempNode);
                             n.setAdjacent(i, tempNode);

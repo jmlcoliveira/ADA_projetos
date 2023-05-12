@@ -19,7 +19,7 @@ public class Node {
      *
      * @param x    row of the node
      * @param y    column of the node
-     * @param dRow direction of the node
+     * @param dRow direction of the node in the row
      * @param dCol direction of the node
      */
     public Node(int x, int y, int dRow, int dCol) {

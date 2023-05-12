@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
         //Read R, C, T
         String[] line = in.readLine().split(" ");
 
