@@ -42,6 +42,7 @@ public class MapClass {
 
     /**
      * Adds a row to the map
+     *
      * @param row row to be added
      */
     public void addRow(String row) {
@@ -51,12 +52,14 @@ public class MapClass {
 
     /**
      * Method that finds the best path
+     *
      * @param row row of the starting point
      * @param col column of the starting point
      * @return the best path if found or "Stuck" if not
      */
-    public String getBestPath(int row, int col) {
-        if (map[row][col] == HOLE) return "0";
+    public int getBestPath(int row, int col) {
+        if (map[row][col] == HOLE) return 0;
+        if (map[row][col] == WALL) return -1;
         //starting node
         Node start = new Node(row, col, 0, 0);
         //initialize processed array
@@ -112,7 +115,7 @@ public class MapClass {
 
                     //if the position is the hole, return the level
                     if (nextPos == HOLE) {
-                        return String.valueOf(level);
+                        return level;
                     }
 
                     //if the position is a wall, means that it moved and got there
@@ -130,6 +133,6 @@ public class MapClass {
             unprocessed = unprocessed2;
             unprocessed2 = new LinkedList<>();
         }
-        return "Stuck";
+        return -1;
     }
 }

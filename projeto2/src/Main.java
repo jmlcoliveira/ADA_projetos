@@ -9,8 +9,10 @@ import java.io.InputStreamReader;
  * @author Joao Oliveira 61052
  */
 public class Main {
+    private static final String HOLE_NOT_REACHABLE = "Stuck";
     public static void main(String[] args) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
         //Read R, C, T
         String[] line = in.readLine().split(" ");
 
@@ -31,7 +33,8 @@ public class Main {
             line = in.readLine().split(" ");
             rows = Integer.parseInt(line[0]);
             cols = Integer.parseInt(line[1]);
-            System.out.println(m.getBestPath(rows, cols));
+            int result = m.getBestPath(rows, cols);
+            System.out.println(result == -1 ? HOLE_NOT_REACHABLE : result);
             test--;
         }
     }
