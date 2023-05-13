@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 /**
@@ -130,7 +129,7 @@ public class MapClass {
                 Iterator<Node> it = getAdjacent(n);
                 while (it.hasNext()) {
                     Node adj = it.next();
-                    //if the direction is the opposite of the previous one, skip it
+                    //if trying to go back, skip it
                     if (adj.getdRow() == -n.getdRow() && adj.getdCol() == -n.getdCol()) continue;
                     if(map[adj.getRow()][adj.getCol()] == HOLE)
                         return level;
