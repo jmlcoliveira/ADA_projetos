@@ -10,10 +10,8 @@ import java.util.Queue;
 public class MapClass {
     //char matrix that represents the map
     private final char[][] map;
-    //Arrays that represent the directions
-    private final int[] D_ROW = {1, -1, 0, 0};
-    private final int[] D_COL = {0, 0, 1, -1};
-    private final int DIRECTION_TO_EXPLORE = 4;
+    //Array containing the directions    DOWN     UP     RIGHT    LEFT
+    private final int[][] DIRECTIONS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
     //Graph containing all the visited nodes
     private final Node[][] graph;
     //Current row
@@ -78,9 +76,9 @@ public class MapClass {
                 int r = n.getRow();
                 int c = n.getCol();
                 if (processed[r][c]) continue;
-                for (int i = 0; i < DIRECTION_TO_EXPLORE; i++) {
-                    int dRow = D_ROW[i];
-                    int dCol = D_COL[i];
+                for (int i = 0; i < DIRECTIONS.length; i++) {
+                    int dRow = DIRECTIONS[i][0];
+                    int dCol = DIRECTIONS[i][1];
                     //if the node is going back to the previous node, skip it
                     if (dRow == -n.getdRow() && dCol == -n.getdCol()) continue;
 
