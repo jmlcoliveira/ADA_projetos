@@ -1,4 +1,6 @@
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -48,6 +50,55 @@ public class MapClass {
         map[currRow++] = row.toCharArray();
     }
 
+
+    /**
+     * Method that returns the adjacent nodes of a node
+     * If the node is already in the graph, returns the adjacent nodes
+     * If not, finds the adjacent nodes and adds them to the graph
+     *
+     * @param n node to get the adjacent nodes
+     * @return iterator of the adjacent nodes
+     */
+    private Iterator<Node> getAdjacent(Node n){
+        int row = n.getRow();
+        int col = n.getCol();
+        if(graph[row][col] == null){
+            for (int[] direction : DIRECTIONS) {
+                int dRow = direction[0];
+                int dCol = direction[1];
+
+                Node tempNode = new Node(row, col, dRow, dCol);
+
+                int nextCol = tempNode.getCol() + dCol;
+                int nextRow = tempNode.getRow() + dRow;
+                char nextPos = map[nextRow][nextCol];
+                //if the position is a wall, skip it because it can't move in that direction
+                if (nextPos == WALL) continue;
+
+                //find a position that is not a wall
+                while (nextPos == EMPTY) {
+                    nextCol = nextCol + dCol;
+                    nextRow = nextRow + dRow;
+                    nextPos = map[nextRow][nextCol];
+                }
+                tempNode.setCol(nextCol - dCol);
+                tempNode.setRow(nextRow - dRow);
+
+
+                //if the position is a wall, means that it moved and got there
+                if (nextPos == WALL || nextPos == HOLE) {
+                    if (nextPos == HOLE) {
+                        tempNode.setCol(nextCol);
+                        tempNode.setRow(nextRow);
+                    }
+                    n.addAdjacent(tempNode);
+                }
+            }
+            graph[row][col] = n;
+        }
+        return graph[row][col].getAdjacent();
+    }
+
     /**
      * Method that finds the best path
      *
@@ -76,53 +127,17 @@ public class MapClass {
                 int r = n.getRow();
                 int c = n.getCol();
                 if (processed[r][c]) continue;
-                for (int i = 0; i < DIRECTIONS.length; i++) {
-                    int dRow = DIRECTIONS[i][0];
-                    int dCol = DIRECTIONS[i][1];
-                    //if the node is going back to the previous node, skip it
-                    if (dRow == -n.getdRow() && dCol == -n.getdCol()) continue;
-
-                    Node tempNode = new Node(r, c, dRow, dCol);
-
-                    Node nodeAtGraph = graph[r][c];
-                    if (nodeAtGraph != null) {
-                        Node adj = nodeAtGraph.getAdjacent(i);
-                        if (adj != null) {
-                            tempNode = adj;
-                            if (!processed[tempNode.getRow()][tempNode.getCol()])
-                                unprocessed2.add(tempNode);
-                        }
-                    }
-
-                    int nextCol = tempNode.getCol() + dCol;
-                    int nextRow = tempNode.getRow() + dRow;
-                    char nextPos = map[nextRow][nextCol];
-                    //if the position is a wall, skip it because it can't move in that direction
-                    if (nextPos == WALL) continue;
-
-                    //find a position that is not a wall
-                    while (nextPos == EMPTY) {
-                        nextCol = nextCol + dCol;
-                        nextRow = nextRow + dRow;
-                        nextPos = map[nextRow][nextCol];
-                    }
-                    tempNode.setCol(nextCol - dCol);
-                    tempNode.setRow(nextRow - dRow);
-
-                    //if the position is the hole, return the level
-                    if (nextPos == HOLE) {
+                Iterator<Node> it = getAdjacent(n);
+                while (it.hasNext()) {
+                    Node adj = it.next();
+                    //if the direction is the opposite of the previous one, skip it
+                    if (adj.getdRow() == -n.getdRow() && adj.getdCol() == -n.getdCol()) continue;
+                    if(map[adj.getRow()][adj.getCol()] == HOLE)
                         return level;
-                    }
-
-                    //if the position is a wall, means that it moved and got there
-                    if (nextPos == WALL) {
-                        if (!processed[tempNode.getRow()][tempNode.getCol()]) {
-                            unprocessed2.add(tempNode);
-                            n.setAdjacent(i, tempNode);
-                        }
+                    if(!processed[adj.getRow()][adj.getCol()]){
+                        unprocessed2.add(adj);
                     }
                 }
-                graph[r][c] = n;
                 processed[r][c] = true;
             } while (!unprocessed.isEmpty());
             //swap queues

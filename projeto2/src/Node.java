@@ -1,3 +1,8 @@
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Node class that represents a position in the map and its adjacent nodes
  *
@@ -9,7 +14,7 @@ public class Node {
     private final int dRow;
     private int col;
     //array of adjacent nodes
-    private final Node[] adjacent;
+    private final List<Node> adjacent;
     private final int dCol;
     //row and column of the node
     private int row;
@@ -24,7 +29,7 @@ public class Node {
      */
     public Node(int x, int y, int dRow, int dCol) {
         //initialize adjacent array with 4 positions, one for each direction
-        this.adjacent = new Node[4];
+        this.adjacent = new LinkedList<>();
         this.row = x;
         this.col = y;
         this.dRow = dRow;
@@ -47,16 +52,6 @@ public class Node {
         this.col = col;
     }
 
-    /**
-     * Method that sets the adjacent node in the given direction
-     *
-     * @param i        direction
-     * @param tempNode adjacent node
-     */
-    public void setAdjacent(int i, Node tempNode) {
-        this.adjacent[i] = tempNode;
-    }
-
     public int getdRow() {
         return dRow;
     }
@@ -65,13 +60,11 @@ public class Node {
         return dCol;
     }
 
-    /**
-     * Method that returns the adjacent node in the given direction
-     *
-     * @param i direction
-     * @return adjacent node
-     */
-    public Node getAdjacent(int i) {
-        return adjacent[i];
+    public void addAdjacent(Node n){
+        adjacent.add(n);
+    }
+
+    public Iterator<Node> getAdjacent() {
+        return adjacent.listIterator();
     }
 }

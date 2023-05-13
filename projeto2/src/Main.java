@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -11,8 +12,9 @@ import java.io.InputStreamReader;
 public class Main {
     private static final String HOLE_NOT_REACHABLE = "Stuck";
     public static void main(String[] args) throws IOException {
+        long startTime = System.currentTimeMillis();
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
+        in = new BufferedReader(new FileReader("massive_input.txt"));
         //Read R, C, T
         String[] line = in.readLine().split(" ");
 
@@ -37,5 +39,7 @@ public class Main {
             System.out.println(result == -1 ? HOLE_NOT_REACHABLE : result);
             test--;
         }
+        System.out.println("That took " + (System.currentTimeMillis() - startTime) + " milliseconds");
+        System.out.println("Memory used: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024 + " MB");
     }
 }
