@@ -91,9 +91,7 @@ public class MapClass {
                         Node adj = nodeAtGraph.getAdjacent(i);
                         if (adj != null) {
                             tempNode = adj;
-                            int tr = tempNode.getRow();
-                            int tc = tempNode.getCol();
-                            if (!processed[tr][tc])
+                            if (!processed[tempNode.getRow()][tempNode.getCol()])
                                 unprocessed2.add(tempNode);
                         }
                     }
