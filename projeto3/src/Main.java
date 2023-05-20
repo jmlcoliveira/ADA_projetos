@@ -35,26 +35,38 @@ public class Main {
             int r2 = Integer.parseInt(link[1]);
             nodes[r1].addAdjacent(nodes[r2]);
             nodes[r2].addAdjacent(nodes[r1]);
-            var edg1 = new Edge(nodes[r1], nodes[r2], nodes[r1].getDepartureCapacity(), nodes[r1].getDepartureCapacity()-nodes[r1].getPopulation());
-            var edg2 = new Edge(nodes[r2], nodes[r1], nodes[r2].getDepartureCapacity(), nodes[r1].getDepartureCapacity()-nodes[r2].getPopulation());
-            graph.computeIfAbsent(r1, l -> new LinkedList<>()).add(edg1);
-            graph.computeIfAbsent(r2, l -> new LinkedList<>()).add(edg2);
             //graph.add();
             isRoot[r2] = false;
+        }
+
+        // read safe region
+        int S = Integer.parseInt(in.readLine());
+
+        for(int i = 1; i < R + 1; i++) {
+            for(Node n : nodes[i].getAdjacent()) {
+                Edge edg1, edg2;
+                if(n.getId() == S){
+                    edg1 = new Edge(nodes[i], n, Integer.MAX_VALUE, 0);
+                    edg2 = new Edge(n, nodes[i], 0, 0);
+                }
+                else{
+                    edg1 = new Edge(nodes[i], n, nodes[i].getDepartureCapacity(), 0);
+                    edg2 = new Edge(n, nodes[i], n.getDepartureCapacity(), 0);
+                }
+                graph.computeIfAbsent(i, l -> new LinkedList<>()).add(edg1);
+                graph.computeIfAbsent(n.getId(), l -> new LinkedList<>()).add(edg2);
+            }
         }
 
         Node root = new Node(0, 0, 0);
         nodes[0] = root;
         graph.computeIfAbsent(root.getId(), l -> new LinkedList<>());
         for (int i = 1; i < R + 1; i++) {
-            //if (isRoot[i]) {
-                var edge = new Edge(root, nodes[i], Integer.MAX_VALUE, Integer.MAX_VALUE);
+            if (i != S) {
+                var edge = new Edge(root, nodes[i], Math.min(nodes[i].getDepartureCapacity(), nodes[i].getPopulation()), 0);
                 graph.get(root.getId()).add(edge);
-            //}
+            }
         }
-
-        // read safe region
-        int S = Integer.parseInt(in.readLine());
 
         // calculate maximum population that can reach the safe region
         //int maxPop = 0;
@@ -67,13 +79,26 @@ public class Main {
                 flow[e.getOrig().getId()][e.getDest().getId()] = 0;
         }
         Node[] via = new Node[R + 1];
-        int flowValue = 0;
+        //int flowValue = 0;
         int increment;
         while ((increment = findPath(nodes, graph, flow, nodes[0], nodes[S], via)) != 0) {
-            flowValue += increment;
+            //flowValue += increment;
+            System.out.println(increment);
             Node node = nodes[S];
             while (node != nodes[0]) {
                 Node origin = via[node.getId()];
+                for(Edge e : graph.get(origin.getId()))
+                    if(e.getDest().equals(node)) {
+                        origin.setPopulation(Math.max(origin.getPopulation() - increment, 0));
+                        e.setCurrCapacity(Math.min(e.getAvailableCapacity(), e.getCurrCapacity() + increment));
+                        break;
+                    }
+                for(Edge e : graph.get(node.getId()))
+                    if(e.getDest().equals(origin)) {
+                        node.setPopulation(Math.min(node.getDepartureCapacity(), node.getPopulation() + increment));
+                        e.setCurrCapacity(Math.max(e.getCurrCapacity() - increment, 0));
+                        break;
+                    }
                 flow[origin.getId()][node.getId()] += increment;
                 flow[node.getId()][origin.getId()] -= increment;
                 node = origin;
@@ -81,7 +106,18 @@ public class Main {
         }
 
         // print result
-        System.out.println(flowValue);
+        //flowValue += nodes[S].getPopulation();
+        int maxPop = 0;
+        for (int i = 1; i <= R; i++) {
+            for (Edge e : graph.get(i)) {
+                if (e.getDest().getId() == S) {
+                    maxPop += e.getCurrCapacity();
+                    break;
+                }
+            }
+        }
+        System.out.println(maxPop);
+        System.out.println(nodes[S].getPopulation());
     }
 
     public static int findPath(Node[] nodes, Map<Integer, List<Edge>> graph, int[][] flow, Node source, Node sink, Node[] via) {
@@ -100,18 +136,16 @@ public class Main {
         do {
             Node origin = waiting.remove();
             for (Edge e : graph.get(origin.getId()).stream().toList()) {
-                //if (e.getOrig().equals(origin)) {
-                    Node destin = e.getDest();
-                    int residue = e.getCurrCapacity() - flow[origin.getId()][destin.getId()];
-                    if(!found[destin.getId()] && residue > 0){
-                        via[destin.getId()] = origin;
-                        pathIncr[destin.getId()] = Math.min(pathIncr[origin.getId()], residue);
-                        if(destin.getId() == sink.getId())
-                            return pathIncr[destin.getId()];
-                        waiting.add(destin);
-                        found[destin.getId()] = true;
-                    }
-                //}
+                Node destin = e.getDest();
+                int residue = e.getAvailableCapacity() - flow[origin.getId()][destin.getId()];
+                if(!found[destin.getId()] && residue > 0){
+                    via[destin.getId()] = origin;
+                    pathIncr[destin.getId()] = Math.min(pathIncr[origin.getId()], residue);
+                    if(destin.getId() == sink.getId())
+                        return pathIncr[destin.getId()];
+                    waiting.add(destin);
+                    found[destin.getId()] = true;
+                }
             }
         } while (!waiting.isEmpty());
         return 0;

@@ -27,4 +27,12 @@ public class Edge {
     public int getCurrCapacity() {
         return currCapacity;
     }
+
+    public void setCurrCapacity(int i) {
+        currCapacity = i;
+    }
+
+    public int getAvailableCapacity() {
+        return maxCapacity - currCapacity;
+    }
 }
