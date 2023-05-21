@@ -1,38 +1,28 @@
 public class Edge {
 
-    private final Node orig;
-    private final Node dest;
-    private final int maxCapacity;
-    private int currCapacity;
+    private final int orig;
+    private final int dest;
+    private int value;
 
-    public Edge(Node orig, Node dest, int maxCapacity, int currCapacity) {
+    public Edge(int orig, int dest, int value) {
         this.orig = orig;
         this.dest = dest;
-        this.maxCapacity = maxCapacity;
-        this.currCapacity = currCapacity;
+        this.value=value;
     }
 
-    public Node getOrig() {
+    public int getOrig() {
         return orig;
     }
 
-    public Node getDest() {
+    public int getDest() {
         return dest;
     }
 
-    public int getMaxCapacity() {
-        return maxCapacity;
+    public int getValue(){
+        return value;
     }
 
-    public int getCurrCapacity() {
-        return currCapacity;
-    }
-
-    public void setCurrCapacity(int i) {
-        currCapacity = i;
-    }
-
-    public int getAvailableCapacity() {
-        return maxCapacity - currCapacity;
+    public void setValue(int value){
+        this.value=value;
     }
 }
