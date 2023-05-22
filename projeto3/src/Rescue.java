@@ -72,7 +72,9 @@ public class Rescue {
     }
 
     /**
-     * Add a link between two regions
+     * Add a link between two regions.
+     * Integer max value is used to represent a value equal or greater
+     * than departure capacity, for simplicity purposes.
      *
      * @param r1 region 1
      * @param r2 region 2
@@ -99,11 +101,9 @@ public class Rescue {
      * @return max flow
      */
     private int edmondsKarp(List<Edge>[] graph, int source, int sink) {
+        //all values are initialized to 0
         int[][] flow = new int[graph.length][graph.length];
-        for (List<Edge> l : graph) {
-            for (Edge e : l)
-                flow[e.getOrig()][e.getDest()] = 0;
-        }
+
         int[] via = new int[graph.length];
         int flowValue = 0;
         int increment;
@@ -145,7 +145,7 @@ public class Rescue {
 
         do {
             int origin = waiting.remove();
-            for (Edge e : graph[origin].stream().toList()) {
+            for (Edge e : graph[origin]) {
                 int destin = e.getDest();
                 int residue = e.getValue() - flow[origin][destin];
                 if (!found[destin] && residue > 0) {
