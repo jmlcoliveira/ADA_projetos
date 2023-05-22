@@ -1,3 +1,8 @@
+/**
+ * Edge class
+ *  @author Guilherme Pocas 60236
+ *  @author Joao Oliveira 61052
+ */
 public class Edge {
 
     private final int orig;

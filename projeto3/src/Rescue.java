@@ -2,59 +2,103 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+/**
+ * Rescue class
+ *
+ *  @author Guilherme Pocas 60236
+ *  @author Joao Oliveira 61052
+ */
 public class Rescue {
 
     private final List<Edge>[] graph;
     private final int source = 0;
-    private int S;
-    private int count=1;
+    private int sink;
+    private int edgeCounter = 1;
 
+    /**
+     * Constructor
+     *
+     * @param regions number of regions
+     */
     @SuppressWarnings("unchecked")
-    public Rescue(int regions){
-        graph = new List[regions*2 + 1];
-        for(int i = 0; i < regions*2 + 1; i++)
+    public Rescue(int regions) {
+        graph = new List[regions * 2 + 1];
+        for (int i = 0; i < regions * 2 + 1; i++)
             graph[i] = new LinkedList<>();
     }
 
-    public int getResult(){
-        return edmondsKarp(this.graph, this.source, this.S);
+    /**
+     * Get the max flow
+     *
+     * @return max flow
+     */
+    public int getResult() {
+        return edmondsKarp(this.graph, this.source, this.sink);
     }
 
-    public void setSink(int sink){
-        this.S = sink*2;
-        for(Edge e : graph[S-1])
-            e.setValue(Integer.MAX_VALUE);
+    /**
+     * Set the sink
+     *
+     * @param sink safe region
+     */
+    public void setSink(int sink) {
+        this.sink = sink * 2;
+        for (Edge e : graph[this.sink - 1])
+            if (e.getDest() == this.sink) {
+                //set value to max, from sink entry to sink exit
+                e.setValue(Integer.MAX_VALUE);
+                break;
+            }
     }
 
-    public void addRegion(int population, int departureCapacity){
+    /**
+     * Add a region to the graph
+     *
+     * @param population        population of the region
+     * @param departureCapacity departure capacity of the region
+     */
+    public void addRegion(int population, int departureCapacity) {
         //entry
-        Edge entry = new Edge(source, count, population);
+        Edge entry = new Edge(source, edgeCounter, population);
         graph[source].add(entry);
-        Edge reverse = new Edge(count, source, 0);
-        graph[count].add(reverse);
+        Edge reverse = new Edge(edgeCounter, source, 0);
+        graph[edgeCounter].add(reverse);
         //exit
-        Edge exit = new Edge(count, count+1, departureCapacity);
-        reverse = new Edge(count+1, count, 0);
-        graph[count].add(exit);
-        graph[count+1].add(reverse);
-        count+=2;
+        Edge exit = new Edge(edgeCounter, edgeCounter + 1, departureCapacity);
+        reverse = new Edge(edgeCounter + 1, edgeCounter, 0);
+        graph[edgeCounter].add(exit);
+        graph[edgeCounter + 1].add(reverse);
+        edgeCounter += 2;
     }
 
-    public void addLink(int r1, int r2){
-        r1=r1*2-1;
-        r2=r2*2-1;
-        Edge e = new Edge(r1+1, r2, Integer.MAX_VALUE);
-        graph[r1+1].add(e);
-        e = new Edge(r2, r1+1, 0);
+    /**
+     * Add a link between two regions
+     *
+     * @param r1 region 1
+     * @param r2 region 2
+     */
+    public void addLink(int r1, int r2) {
+        r1 = r1 * 2 - 1;
+        r2 = r2 * 2 - 1;
+        Edge e = new Edge(r1 + 1, r2, Integer.MAX_VALUE);
+        graph[r1 + 1].add(e);
+        e = new Edge(r2, r1 + 1, 0);
         graph[r2].add(e);
-        e = new Edge(r2+1, r1, Integer.MAX_VALUE);
-        graph[r2+1].add(e);
-        e = new Edge(r1, r2+1, 0);
+        e = new Edge(r2 + 1, r1, Integer.MAX_VALUE);
+        graph[r2 + 1].add(e);
+        e = new Edge(r1, r2 + 1, 0);
         graph[r1].add(e);
     }
 
-    private int edmondsKarp(List<Edge>[] graph, int source, int sink){
-
+    /**
+     * Edmonds-Karp algorithm
+     *
+     * @param graph  adjacency list
+     * @param source entry node
+     * @param sink   exit node
+     * @return max flow
+     */
+    private int edmondsKarp(List<Edge>[] graph, int source, int sink) {
         int[][] flow = new int[graph.length][graph.length];
         for (List<Edge> l : graph) {
             for (Edge e : l)
@@ -76,6 +120,16 @@ public class Rescue {
         return flowValue;
     }
 
+    /**
+     * Find a path from source to sink
+     *
+     * @param graph  adjacency list
+     * @param flow   flow matrix
+     * @param source entry node
+     * @param sink   exit node
+     * @param via    via matrix
+     * @return path increment
+     */
     private int findPath(List<Edge>[] graph, int[][] flow, int source, int sink, int[] via) {
         Queue<Integer> waiting = new LinkedList<>();
         boolean[] found = new boolean[graph.length];
@@ -94,10 +148,10 @@ public class Rescue {
             for (Edge e : graph[origin].stream().toList()) {
                 int destin = e.getDest();
                 int residue = e.getValue() - flow[origin][destin];
-                if(!found[destin] && residue > 0){
+                if (!found[destin] && residue > 0) {
                     via[destin] = origin;
                     pathIncr[destin] = Math.min(pathIncr[origin], residue);
-                    if(destin == sink)
+                    if (destin == sink)
                         return pathIncr[destin];
                     waiting.add(destin);
                     found[destin] = true;

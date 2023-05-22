@@ -2,6 +2,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * Main class for the Rescue problem
+ * Reads the input and prints the result
+ */
 public class Main {
 
     public static void main(String[] args) throws IOException {
@@ -37,5 +41,4 @@ public class Main {
 
         System.out.println(rescue.getResult());
     }
-
 }
