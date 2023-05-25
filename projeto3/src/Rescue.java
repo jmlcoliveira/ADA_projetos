@@ -41,7 +41,7 @@ public class Rescue {
      *
      * @param sink safe region
      */
-    public void setSink(int sink) {
+    public void  setSink(int sink) {
         this.sink = sink * 2;
         //edge from sink entry to sink exit is always the second edge
         Edge e = graph[this.sink - 1].get(1);
@@ -130,10 +130,8 @@ public class Rescue {
      */
     private int findPath(List<Edge>[] graph, int[][] flow, int source, int sink, int[] via) {
         Queue<Integer> waiting = new LinkedList<>();
+        //all values are initialized to false
         boolean[] found = new boolean[graph.length];
-        for (int i = 0; i < graph.length; i++) {
-            found[i] = false;
-        }
 
         int[] pathIncr = new int[graph.length];
         waiting.add(source);
@@ -145,8 +143,9 @@ public class Rescue {
             int origin = waiting.remove();
             for (Edge e : graph[origin]) {
                 int destin = e.getDest();
+                if(found[destin]) continue;
                 int residue = e.getValue() - flow[origin][destin];
-                if (!found[destin] && residue > 0) {
+                if (residue > 0) {
                     via[destin] = origin;
                     pathIncr[destin] = Math.min(pathIncr[origin], residue);
                     if (destin == sink)
