@@ -43,12 +43,10 @@ public class Rescue {
      */
     public void setSink(int sink) {
         this.sink = sink * 2;
-        for (Edge e : graph[this.sink - 1])
-            if (e.getDest() == this.sink) {
-                //set value to max, from sink entry to sink exit
-                e.setValue(Integer.MAX_VALUE);
-                break;
-            }
+        //edge from sink entry to sink exit is always the second edge
+        Edge e = graph[this.sink - 1].get(1);
+        //set value to max, from sink entry to sink exit
+        e.setValue(Integer.MAX_VALUE);
     }
 
     /**
